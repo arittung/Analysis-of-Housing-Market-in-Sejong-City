@@ -1,0 +1,188 @@
+#-*coding:utf-8 -*-
+
+
+import pathlib
+import random
+from functools import reduce
+from collections import defaultdict
+
+import pandas as pd
+import geopandas as gpd
+import folium
+import shapely
+import numpy as np
+from IPython.display import display
+import matplotlib.pyplot as plt
+from tqdm.notebook import tqdm
+import xgboost
+import sklearn.cluster
+import tensorflow as tf
+import matplotlib as mpl
+
+from pandas import DataFrame
+from geoband import API
+
+
+
+
+
+input_path = pathlib.Path('./input')
+if not input_path.is_dir():
+    input_path.mkdir()
+
+from geoband.API import *
+GetCompasData('SBJ_2102_001', '1', '1.세종시_전유부.csv')
+GetCompasData('SBJ_2102_001', '2', '2.세종시_표제부.csv')
+GetCompasData('SBJ_2102_001', '3', '3.세종시_아파트(매매)_실거래가.csv')
+GetCompasData('SBJ_2102_001', '4', '4.세종시_연립다세대(매매)_실거래가.csv')
+GetCompasData('SBJ_2102_001', '5', '5.세종시_단독다가구(매매)_실거래가.csv')
+GetCompasData('SBJ_2102_001', '6', '6.세종시_오피스텔(매매)_실거래가.csv')
+GetCompasData('SBJ_2102_001', '7', '7.세종시_아파트(전월세)_실거래가.csv')
+GetCompasData('SBJ_2102_001', '8', '8.세종시_연립다세대(전월세)_실거래가.csv')
+GetCompasData('SBJ_2102_001', '9', '9.세종시_단독다가구(전월세)_실거래가.csv')
+GetCompasData('SBJ_2102_001', '10', '10.세종시_오피스텔(전월세)_실거래가.csv')
+GetCompasData('SBJ_2102_001', '11', '11.세종시_상업업무용(매매)_실거래가.csv')
+GetCompasData('SBJ_2102_001', '12', '12.세종시_토지(매매)_실거래가.csv')
+GetCompasData('SBJ_2102_001', '13', '13.세종시_분양권_실거래가.csv')
+GetCompasData('SBJ_2102_001', '14', '14.세종시_상권정보.csv')
+GetCompasData('SBJ_2102_001', '15', '15.세종시_상권정보_업종코드.csv')
+GetCompasData('SBJ_2102_001', '16', '16.세종시_사업체_매출정보.geojson')
+GetCompasData('SBJ_2102_001', '17', '17.세종시_사업체_매출정보.csv')
+GetCompasData('SBJ_2102_001', '18', '18.세종시_개별공시지가(2017~2020).csv')
+GetCompasData('SBJ_2102_001', '19', '19.세종시_연령별_거주인구정보_격자.geojson')
+GetCompasData('SBJ_2102_001', '20', '20.세종시_전입자수.csv')
+GetCompasData('SBJ_2102_001', '21', '21.세종시_전출자수.csv')
+GetCompasData('SBJ_2102_001', '22', '22.세종시_연령별_인구현황.csv')
+GetCompasData('SBJ_2102_001', '23', '23.세종시_도로명주소_건물.geojson')
+GetCompasData('SBJ_2102_001', '24', '24.세종시_건축물연면적_격자.geojson')
+GetCompasData('SBJ_2102_001', '25', '25.세종시_가구_월평균_소비지출액.csv')
+GetCompasData('SBJ_2102_001', '26', '26.세종시_거주기간.csv')
+GetCompasData('SBJ_2102_001', '27', '27.세종시_월평균_가구소득.csv')
+GetCompasData('SBJ_2102_001', '28', '28.세종시_지역별_세대원수별_세대수.csv')
+GetCompasData('SBJ_2102_001', '29', '29.세종시_거주의사(향후).csv')
+GetCompasData('SBJ_2102_001', '30', '30.세종시_법정경계(시군구).geojson')
+GetCompasData('SBJ_2102_001', '31', '31.세종시_법정경계(읍면동).geojson')
+GetCompasData('SBJ_2102_001', '32', '32.세종시_행정경계(읍면동).geojson')
+GetCompasData('SBJ_2102_001', '33', '33.세종시_지적도.geojson')
+GetCompasData('SBJ_2102_001', '34', '34.세종시_건물분포_이미지.zip')
+
+for path in list(input_path.glob('*.csv')) + list(input_path.glob('*.geojson')):
+    print(path)
+    
+    
+    
+    
+    
+# 자료 불러오기
+아파트_매매= pd.read_csv(input_path.joinpath('3.세종시_아파트(매매)_실거래가.csv'), encoding='cp949' )
+아파트_매매
+
+# 세종 특별자치시 없애기
+for i in range(len(아파트_매매['시군구'])):
+    아파트_매매['시군구'][i] = 아파트_매매['시군구'][i][7:]
+
+# col 확인
+아파트_매매.columns
+
+# 주소별 거래금액 평균 구하기
+data_아파트 = 아파트_매매.groupby('시군구')['거래금액(만원)'].mean()
+data_아파트
+
+# 그래프 한글깨짐 방지
+import matplotlib 
+matplotlib.font_manager._rebuild()
+plt.rc("font", family="Malgun Gothic")
+
+# 지역 별 평균 가격 그래프
+ax = data_아파트.plot(kind ='bar', title ='지역별 아파트 평균 가격', figsize =(15, 5), legend=True, fontsize = 10, color='#9467bd')
+ax.set_xlabel('지역', fontsize = 12)
+ax.set_ylabel('아파트 평균 가격', fontsize = 12)
+ax.legend(['평균가격'], fontsize=12)
+
+
+
+
+
+# 자료 불러오기
+연립다세대_매매= pd.read_csv(input_path.joinpath('4.세종시_연립다세대(매매)_실거래가.csv'), thousands = ',',encoding='cp949' )
+연립다세대_매매
+
+# 세종 특별자치시 없애기
+for i in range(len(연립다세대_매매['시군구'])):
+    연립다세대_매매['시군구'][i] = 연립다세대_매매['시군구'][i][7:]
+
+# col 확인
+연립다세대_매매.columns
+
+# 주소별 거래금액 평균 구하기
+data_연립다세대 = 연립다세대_매매.groupby('시군구')['거래금액(만원)'].mean()
+data_연립다세대
+import matplotlib 
+matplotlib.font_manager._rebuild()
+plt.rc("font", family="Malgun Gothic")
+
+# 지역 별 평균 가격 그래프
+ax = data_연립다세대.plot(kind ='bar', title ='지역별 연립다세대 평균 가격', figsize =(15, 5), legend=True, fontsize = 10, color='#17becf')
+ax.set_xlabel('지역', fontsize = 12)
+ax.set_ylabel('연립다세대 평균 가격', fontsize = 12)
+ax.legend(['평균가격'], fontsize=12)
+
+
+
+
+# 자료 불러오기
+단독다가구_매매= pd.read_csv(input_path.joinpath('5.세종시_단독다가구(매매)_실거래가.csv'),encoding='cp949' )
+단독다가구_매매
+
+# 세종 특별자치시 없애기
+for i in range(len(단독다가구_매매['시군구'])):
+    단독다가구_매매['시군구'][i] = 단독다가구_매매['시군구'][i][7:]
+
+# col 확인
+단독다가구_매매.columns
+
+# 주소별 거래금액 평균 구하기
+data_단독다가구 = 단독다가구_매매.groupby('시군구')['거래금액(만원)'].mean()
+data_단독다가구
+import matplotlib 
+matplotlib.font_manager._rebuild()
+plt.rc("font", family="Malgun Gothic")
+
+# 지역 별 평균 가격 그래프
+ax = data_단독다가구.plot(kind='bar', title='지역별 단독다가구 평균 가격', figsize=(80,15), legend=True, fontsize=32, color='#8c564b')
+ax.set_xlabel('지역',fontsize=30)
+ax.set_ylabel('단독다가구 평균 가격', fontsize=30)
+ax.legend(['평균 가격'],fontsize=30)
+
+
+
+
+
+# 자료 불러오기
+오피스텔_매매= pd.read_csv(input_path.joinpath('6.세종시_오피스텔(매매)_실거래가.csv'),encoding='cp949' )
+오피스텔_매매
+
+# 세종 특별자치시 없애기
+for i in range(len(오피스텔_매매['시군구'])):
+    오피스텔_매매['시군구'][i] = 오피스텔_매매['시군구'][i][7:]
+
+# col 확인
+오피스텔_매매.columns
+
+# 주소별 거래금액 평균 구하기
+data_오피스텔 = 오피스텔_매매.groupby('시군구')['거래금액(만원)'].mean()
+data_오피스텔
+import matplotlib 
+matplotlib.font_manager._rebuild()
+plt.rc("font", family="Malgun Gothic")
+
+# 지역 별 평균 가격 그래프
+ax = data_오피스텔.plot(kind ='bar', title ='지역별 오피스텔 평균 가격', figsize =(15, 5), legend=True, fontsize = 10, color='#e377c2')
+ax.set_xlabel('지역', fontsize = 12)
+ax.set_ylabel('오피스텔 평균 가격', fontsize = 12)
+ax.legend(['평균가격'], fontsize=12)
+
+
+
+
+
