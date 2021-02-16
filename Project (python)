@@ -386,3 +386,17 @@ data_상권정보_lon_lat
 # 지역별 위도와 경도, 총 상점 수 합치기
 data_상권정보_info = pd.merge( data_상권정보_all,data_상권정보_lon_lat, on ="행정동명")
 data_상권정보_info
+
+data_상권정보_all = data_상권정보_all.drop(index='All')
+data_상권정보_all
+
+# 그래프 한글깨짐 방지
+import matplotlib
+matplotlib.font_manager._rebuild()
+plt.rc("font", family="Malgun Gothic")
+
+# 지역 별 평균 가격 그래프
+ax = data_상권정보_all.plot(kind ='bar', title ='지역별 상권 수', figsize =(15, 5), legend=True, fontsize = 10, color='burlywood')
+ax.set_xlabel('지역', fontsize = 12)
+ax.set_ylabel('상권 수', fontsize = 12)
+ax.legend(['상권 수'], fontsize=12)
