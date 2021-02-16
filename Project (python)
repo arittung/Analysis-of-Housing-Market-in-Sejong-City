@@ -303,14 +303,15 @@ matplotlib.font_manager._rebuild()
 plt.rc("font", family="Malgun Gothic")
 
 # 지역 별 평균 가격 그래프
-ax = data_단독다가구_전월세.plot(kind ='bar', title ='지역별 단독다가구 전월세 평균 가격', figsize =(30, 10), legend=True, fontsize = 10, color=[ 'dodgerblue', 'crimson'])
-plt.plot(data_단독다가구_전세, linestyle='--', color = 'orangered')
-ax.set_xlabel('지역', fontsize = 12)
-ax.set_ylabel('단독다가구 평균 가격(전월세)', fontsize = 12)
-ax.legend(['전세 가격','월세보증금', '월세 가격'], fontsize=12)
+ax = data_단독다가구_전월세.plot(kind ='bar', title ='지역별 단독다가구 전월세 평균 가격', figsize =(80, 15), legend=True, fontsize = 32, color=[ 'dodgerblue', 'crimson'])
+ax.plot(data_단독다가구_전세, linestyle='--', color = 'orangered')
+ax.set_xlabel('지역', fontsize = 30)
+ax.set_ylabel('단독다가구 평균 가격', fontsize = 30)
+ax.legend(['전세 가격','월세보증금', '월세 가격'], fontsize=20)
+ax.title.set_size(35)
 
 for i, v in enumerate(data_단독다가구_전월세['월세(만원)','월세']):
-    ax.text(i-0.1, v+v*20, str(round(v, 1)))
+    ax.text(i-0.1, v+v*20, str(v), size = 30)
     
     
     
