@@ -181,3 +181,182 @@ ax = data_오피스텔.plot(kind ='bar', title ='지역별 오피스텔 평균 �
 ax.set_xlabel('지역', fontsize = 12)
 ax.set_ylabel('오피스텔 평균 가격', fontsize = 12)
 ax.legend(['평균가격'], fontsize=12)
+
+
+
+# 자료 불러오기
+아파트_전월세= pd.read_csv(input_path.joinpath('7.세종시_아파트(전월세)_실거래가.csv'),thousands = ',',encoding='cp949' )
+아파트_전월세
+
+# 행 확인
+아파트_전월세.columns
+
+# 세종특별자치시 없애기
+for i in range(len(아파트_전월세['시군구'])):
+    아파트_전월세['시군구'][i] = 아파트_전월세['시군구'][i][7:]
+
+# 지역마다 전,월세 평균
+data_아파트_전월세 = 아파트_전월세.groupby(['시군구', '전월세구분'])[['보증금(만원)', '월세(만원)']].mean()
+data_아파트_전월세 = data_아파트_전월세.unstack().fillna(0)
+data_아파트_전월세
+
+data_아파트_전월세_월세보증금 = data_아파트_전월세['보증금(만원)','월세']
+data_아파트_전월세_월세 = data_아파트_전월세['월세(만원)','월세']
+data_아파트_전세 = data_아파트_전월세['보증금(만원)','전세']
+
+#data_아파트_전월세['보증금(만원)','전세'] = data_아파트_전세
+del(data_아파트_전월세['월세(만원)','전세'])
+del(data_아파트_전월세['보증금(만원)','전세'])
+
+round(data_아파트_전월세,2)
+
+# 그래프 한글깨짐 방지
+matplotlib.font_manager._rebuild()
+plt.rc("font", family="Malgun Gothic")
+
+# 지역 별 평균 가격 그래프
+ax = data_아파트_전월세.plot(kind ='bar', title ='지역별 아파트 전월세 평균 가격', figsize =(15, 5), legend=True, fontsize = 10, color=[ 'dodgerblue', 'crimson'])
+plt.plot(data_아파트_전세, linestyle='--', color = 'orangered')
+ax.set_xlabel('지역', fontsize = 12)
+ax.set_ylabel('아파트 평균 가격(전월세)', fontsize = 12)
+ax.legend(['전세 가격','월세보증금', '월세 가격'], fontsize=12)
+
+for i, v in enumerate(data_아파트_전월세['월세(만원)','월세']):
+    ax.text(i-0.1, v+v*20, str(round(v, 1)))
+    
+    
+    
+    
+    
+# 자료 불러오기
+연립다세대_전월세= pd.read_csv(input_path.joinpath('8.세종시_연립다세대(전월세)_실거래가.csv'),thousands = ',',encoding='cp949' )
+연립다세대_전월세
+
+# 행 확인
+연립다세대_전월세.columns
+
+# 세종특별자치시 없애기
+for i in range(len(연립다세대_전월세['시군구'])):
+    연립다세대_전월세['시군구'][i] = 연립다세대_전월세['시군구'][i][7:]
+
+# 지역마다 전,월세 평균
+data_연립다세대_전월세 = 연립다세대_전월세.groupby(['시군구', '전월세구분'])[['보증금(만원)', '월세(만원)']].mean()
+data_연립다세대_전월세 = data_연립다세대_전월세.unstack().fillna(0)
+data_연립다세대_전월세
+
+data_연립다세대_전월세_월세보증금 = data_연립다세대_전월세['보증금(만원)','월세']
+data_연립다세대_전월세_월세 = data_연립다세대_전월세['월세(만원)','월세']
+data_연립다세대_전세 = data_연립다세대_전월세['보증금(만원)','전세']
+
+#data_연립다세대_전월세['보증금(만원)','전세'] = data_연립다세대_전세
+del(data_연립다세대_전월세['월세(만원)','전세'])
+del(data_연립다세대_전월세['보증금(만원)','전세'])
+
+round(data_연립다세대_전월세,2)
+
+# 그래프 한글깨짐 방지
+matplotlib.font_manager._rebuild()
+plt.rc("font", family="Malgun Gothic")
+
+# 지역 별 평균 가격 그래프
+ax = data_연립다세대_전월세.plot(kind ='bar', title ='지역별 연립다세대 전월세 평균 가격', figsize =(15, 5), legend=True, fontsize = 10, color=[ 'dodgerblue', 'crimson'])
+plt.plot(data_연립다세대_전세, linestyle='--', color = 'orangered')
+ax.set_xlabel('지역', fontsize = 12)
+ax.set_ylabel('연립다세대 평균 가격(전월세)', fontsize = 12)
+ax.legend(['전세 가격','월세보증금', '월세 가격'], fontsize=12)
+
+for i, v in enumerate(data_연립다세대_전월세['월세(만원)','월세']):
+    ax.text(i-0.1, v+v*20, str(round(v, 1)))
+    
+    
+    
+    
+    
+# 자료 불러오기
+단독다가구_전월세= pd.read_csv(input_path.joinpath('9.세종시_단독다가구(전월세)_실거래가.csv'),thousands = ',',encoding='cp949' )
+단독다가구_전월세
+
+# 행 확인
+단독다가구_전월세.columns
+
+# 세종특별자치시 없애기
+for i in range(len(단독다가구_전월세['시군구'])):
+    단독다가구_전월세['시군구'][i] = 단독다가구_전월세['시군구'][i][7:]
+
+# 지역마다 전,월세 평균
+data_단독다가구_전월세 = 단독다가구_전월세.groupby(['시군구', '전월세구분'])[['보증금(만원)', '월세(만원)']].mean()
+data_단독다가구_전월세 = data_단독다가구_전월세.unstack().fillna(0)
+data_단독다가구_전월세
+
+data_단독다가구_전월세_월세보증금 = data_단독다가구_전월세['보증금(만원)','월세']
+data_단독다가구_전월세_월세 = data_단독다가구_전월세['월세(만원)','월세']
+data_단독다가구_전세 = data_단독다가구_전월세['보증금(만원)','전세']
+
+#data_단독다가구_전월세['보증금(만원)','전세'] = data_단독다가구_전세
+del(data_단독다가구_전월세['월세(만원)','전세'])
+del(data_단독다가구_전월세['보증금(만원)','전세'])
+
+round(data_단독다가구_전월세,2)
+
+# 그래프 한글깨짐 방지
+matplotlib.font_manager._rebuild()
+plt.rc("font", family="Malgun Gothic")
+
+# 지역 별 평균 가격 그래프
+ax = data_단독다가구_전월세.plot(kind ='bar', title ='지역별 단독다가구 전월세 평균 가격', figsize =(30, 10), legend=True, fontsize = 10, color=[ 'dodgerblue', 'crimson'])
+plt.plot(data_단독다가구_전세, linestyle='--', color = 'orangered')
+ax.set_xlabel('지역', fontsize = 12)
+ax.set_ylabel('단독다가구 평균 가격(전월세)', fontsize = 12)
+ax.legend(['전세 가격','월세보증금', '월세 가격'], fontsize=12)
+
+for i, v in enumerate(data_단독다가구_전월세['월세(만원)','월세']):
+    ax.text(i-0.1, v+v*20, str(round(v, 1)))
+    
+    
+    
+    
+    
+# 자료 불러오기
+오피스텔_전월세= pd.read_csv(input_path.joinpath('10.세종시_오피스텔(전월세)_실거래가.csv'),thousands = ',',encoding='cp949' )
+오피스텔_전월세
+
+# 행 확인
+오피스텔_전월세.columns
+
+# 세종특별자치시 없애기
+for i in range(len(오피스텔_전월세['시군구'])):
+    오피스텔_전월세['시군구'][i] = 오피스텔_전월세['시군구'][i][7:]
+
+# 지역마다 전,월세 평균
+data_오피스텔_전월세 = 오피스텔_전월세.groupby(['시군구', '전월세구분'])[['보증금(만원)', '월세(만원)']].mean()
+data_오피스텔_전월세 = data_오피스텔_전월세.unstack().fillna(0)
+data_오피스텔_전월세
+
+data_오피스텔_전월세_월세보증금 = data_오피스텔_전월세['보증금(만원)','월세']
+data_오피스텔_전월세_월세 = data_오피스텔_전월세['월세(만원)','월세']
+data_오피스텔_전세 = data_오피스텔_전월세['보증금(만원)','전세']
+
+#data_오피스텔_전월세['보증금(만원)','전세'] = data_오피스텔_전세
+del(data_오피스텔_전월세['월세(만원)','전세'])
+del(data_오피스텔_전월세['보증금(만원)','전세'])
+
+round(data_오피스텔_전월세,2)
+
+# 그래프 한글깨짐 방지
+matplotlib.font_manager._rebuild()
+plt.rc("font", family="Malgun Gothic")
+
+# 지역 별 평균 가격 그래프
+ax = data_오피스텔_전월세.plot(kind ='bar', title ='지역별 오피스텔 전월세 평균 가격', figsize =(15, 5), legend=True, fontsize = 10, color=[ 'dodgerblue', 'crimson'])
+plt.plot(data_오피스텔_전세, linestyle='--', color = 'orangered')
+ax.set_xlabel('지역', fontsize = 12)
+ax.set_ylabel('오피스텔 평균 가격(전월세)', fontsize = 12)
+ax.legend(['전세 가격','월세보증금', '월세 가격'], fontsize=12)
+
+for i, v in enumerate(data_오피스텔_전월세['월세(만원)','월세']):
+    ax.text(i+0.05, v+v*20, str(round(v, 1)))
+    
+    
+    
+    
+    
