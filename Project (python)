@@ -360,4 +360,29 @@ for i, v in enumerate(data_오피스텔_전월세['월세(만원)','월세']):
     
     
     
-    
+
+# 자료 불러오기
+상권정보 = pd.read_csv(input_path.joinpath('14.세종시_상권정보.csv'))
+상권정보
+
+# 지역별 각 상점 개수와 합계
+data_상권정보 = pd.crosstab(상권정보.행정동명, 상권정보.상권업종대분류명, margins=True)
+data_상권정보
+
+# 지역별 상권 수
+data_상권정보_all = data_상권정보['All']
+data_상권정보_all
+
+# 지역별 위도와 경도
+행정경계_읍면동 = gpd.read_file(input_path.joinpath('32.세종시_행정경계(읍면동).geojson'))
+행정경계_읍면동
+
+행정경계_읍면동['lon'] = (행정경계_읍면동['geometry'].bounds['maxx'] + 행정경계_읍면동['geometry'].bounds['minx'])/2
+행정경계_읍면동['lat'] = (행정경계_읍면동['geometry'].bounds['maxy'] + 행정경계_읍면동['geometry'].bounds['miny'])/2
+data_상권정보_lon_lat = 행정경계_읍면동[['ADM_DR_NM', 'lon', 'lat']]
+data_상권정보_lon_lat=data_상권정보_lon_lat.rename(columns={'ADM_DR_NM':'행정동명'})
+data_상권정보_lon_lat
+
+# 지역별 위도와 경도, 총 상점 수 합치기
+data_상권정보_info = pd.merge( data_상권정보_all,data_상권정보_lon_lat, on ="행정동명")
+data_상권정보_info
