@@ -18,6 +18,7 @@ import xgboost
 import sklearn.cluster
 import tensorflow as tf
 import matplotlib as mpl
+import seaborn as sns
 
 from pandas import DataFrame
 from geoband import API
@@ -25,6 +26,7 @@ from geoband import API
 
 
 
+## 제공된 데이터
 
 input_path = pathlib.Path('./input')
 if not input_path.is_dir():
@@ -71,7 +73,7 @@ for path in list(input_path.glob('*.csv')) + list(input_path.glob('*.geojson')):
     
     
     
-    
+## 지역별 매매 평균값 
     
 # 자료 불러오기
 아파트_매매= pd.read_csv(input_path.joinpath('3.세종시_아파트(매매)_실거래가.csv'), encoding='cp949' )
@@ -183,6 +185,9 @@ ax.set_ylabel('오피스텔 평균 가격', fontsize = 12)
 ax.legend(['평균가격'], fontsize=12)
 
 
+
+
+## 지역별 전, 월세 평균값 
 
 # 자료 불러오기
 아파트_전월세= pd.read_csv(input_path.joinpath('7.세종시_아파트(전월세)_실거래가.csv'),thousands = ',',encoding='cp949' )
@@ -360,6 +365,38 @@ for i, v in enumerate(data_오피스텔_전월세['월세(만원)','월세']):
     
     
     
+## geojson 자료 확인
+연령별_거주인구 = gpd.read_file(input_path.joinpath('19.세종시_연령별_거주인구정보_격자.geojson'))
+연령별_거주인구
+
+
+도로명주소 = gpd.read_file(input_path.joinpath('23.세종시_도로명주소_건물.geojson'))
+도로명주소
+
+
+건축물연면적 = gpd.read_file(input_path.joinpath('24.세종시_건축물연면적_격자.geojson'))
+건축물연면적
+
+
+법정경계_시군구 = gpd.read_file(input_path.joinpath('30.세종시_법정경계(시군구).geojson'))
+법정경계_시군구
+
+
+법정경계_읍면동 = gpd.read_file(input_path.joinpath('31.세종시_법정경계(읍면동).geojson'))
+법정경계_읍면동
+
+
+행정경계_읍면동 = gpd.read_file(input_path.joinpath('32.세종시_행정경계(읍면동).geojson'))
+행정경계_읍면동
+
+
+지적도 = gpd.read_file(input_path.joinpath('33.세종시_지적도.geojson'))
+지적도
+
+
+
+
+## 지역별 상권정보
 
 # 자료 불러오기
 상권정보 = pd.read_csv(input_path.joinpath('14.세종시_상권정보.csv'))
@@ -387,16 +424,182 @@ data_상권정보_lon_lat
 data_상권정보_info = pd.merge( data_상권정보_all,data_상권정보_lon_lat, on ="행정동명")
 data_상권정보_info
 
-data_상권정보_all = data_상권정보_all.drop(index='All')
-data_상권정보_all
+# 상권업종대분류명 사전순 정렬
+data_상권정보 = 상권정보
+data_상권정보 = data_상권정보.sort_values(by='상권업종대분류명')
+data_상권정보
 
-# 그래프 한글깨짐 방지
-import matplotlib
-matplotlib.font_manager._rebuild()
-plt.rc("font", family="Malgun Gothic")
+data_상권정보 = data_상권정보[['상권업종대분류명', '도로명주소', 'lon', 'lat']]
+
+# 상권업종대분류명을 상권종류로 이름 변경
+data_상권정보.rename(columns={'상권업종대분류명':'상권종류'}, inplace = True)
+data_상권정보
 
 # 지역 별 평균 가격 그래프
-ax = data_상권정보_all.plot(kind ='bar', title ='지역별 상권 수', figsize =(15, 5), legend=True, fontsize = 10, color='burlywood')
-ax.set_xlabel('지역', fontsize = 12)
-ax.set_ylabel('상권 수', fontsize = 12)
-ax.legend(['상권 수'], fontsize=12)
+plt.figure(figsize= (15,6))
+sns.countplot(data = 상권정보, x="행정동명", order=상권정보['행정동명'].value_counts().index)
+
+
+
+
+
+## 상권 수 지도에 표시
+# 위도, 경도, 총 상권 개수를 float 형으로 바꿈
+data_상권정보_info['lon'] = data_상권정보_info.lon.astype(float)
+data_상권정보_info['lat'] = data_상권정보_info.lat.astype(float)
+data_상권정보_info['All'] = data_상권정보_info.All.astype(float)
+data_상권정보_info
+
+# 상권 수 시각화
+상권수_map = folium.Map(location = [data_상권정보_info['lat'].mean(), data_상권정보_info['lon'].mean()],zoom_start = 11)
+
+for item in data_상권정보_info.index:
+    latitude = data_상권정보_info.loc[item,'lat']
+    longtitude = data_상권정보_info.loc[item,'lon']
+    popups = folium.Popup(data_상권정보_info.loc[item, '행정동명'], max_width=100)
+    folium.CircleMarker([latitude, longtitude],
+                       radius = data_상권정보_info.loc[item,'All']/100,
+                       popup = popups,
+                       color = 'red',
+                       fill = True).add_to(상권수_map)
+상권수_map
+
+
+
+
+
+## 상권 수 지도에 표시2
+
+# 자료 불러오기
+행정경계_읍면동 = gpd.read_file(input_path.joinpath('32.세종시_행정경계(읍면동).geojson'))
+행정경계_읍면동
+
+data = data_상권정보_info[['행정동명', 'All']]
+data
+
+# 지도
+상권수_map2 = folium.Map(location = [data_상권정보_info['lat'].mean(), data_상권정보_info['lon'].mean()],zoom_start = 11)
+
+상권수_map2.choropleth(
+    geo_data = 행정경계_읍면동,
+    data = data,
+    columns=['행정동명', 'All'],
+    key_on = 'feature.properties.ADM_DR_NM',
+    fill_color = 'BuPu',
+    legend_name ='상권 수',
+    )
+                       
+상권수_map2
+
+
+
+
+## 상권 정보 지도에 표시
+data_상권정보 = 상권정보
+data_상권정보 = data_상권정보[['상권업종대분류명', '도로명주소', 'lon', 'lat']]
+
+# 상권업종대분류명을 상권종류로 이름 변경
+data_상권정보.rename(columns={'상권업종대분류명':'상권종류'}, inplace = True)
+data_상권정보
+
+
+# 위도, 경도 값 형 변환
+data_상권정보['lon'] = data_상권정보.lon.astype(float)
+data_상권정보['lat'] = data_상권정보.lat.astype(float)
+
+
+# 지도
+
+상권종류_map = folium.Map(location = [data_상권정보['lat'].mean(), data_상권정보['lon'].mean()],zoom_start = 11)
+
+for item in data_상권정보.index:
+    latitude = data_상권정보.loc[item,'lat']
+    longtitude = data_상권정보.loc[item,'lon']
+    
+    if data_상권정보.loc[item, '상권종류'] == '관광/여가/오락':
+        colors = 'dodgerblue'
+    
+    elif data_상권정보.loc[item, '상권종류'] == '부동산':
+        colors = 'burlywood'
+    
+    elif data_상권정보.loc[item, '상권종류'] == '생활서비스':
+        colors = 'gold'
+    
+    elif data_상권정보.loc[item, '상권종류'] == '소매':
+        colors = 'darkolivegreen'
+    
+    elif data_상권정보.loc[item, '상권종류'] == '학문/교육':
+        colors = 'slategrey'
+    
+    elif data_상권정보.loc[item, '상권종류'] == '음식' :
+        colors = 'salmon'
+    
+    elif data_상권정보.loc[item, '상권종류'] == '스포츠' :
+        colors = 'blueviolet'
+    
+    elif data_상권정보.loc[item, '상권종류'] == '숙박':
+        colors = 'lihgtpink'
+    popups = folium.Popup(data_상권정보.loc[item, '도로명주소'], max_width=150)
+    folium.CircleMarker([latitude, longtitude],
+                       popup = popups,
+                       color = colors,
+                       fill = True).add_to(상권종류_map)
+상권종류_map
+
+
+
+
+
+## 아파트 시세 지도
+
+아파트_매매
+
+# 법정경계에 맞게 시군구 편집
+
+data_시군구_아파트 = 아파트_매매[['시군구', '거래금액(만원)']]
+for i in range(len(data_시군구_아파트['시군구'])):
+    if len(data_시군구_아파트.loc[i, '시군구']) == 9:
+        data_시군구_아파트['시군구'][i] = data_시군구_아파트['시군구'][i][:5]
+    elif len(data_시군구_아파트.loc[i, '시군구']) == 8:
+        
+        if data_시군구_아파트.loc[i, '시군구'][1] == '조':
+            data_시군구_아파트['시군구'][i] = data_시군구_아파트['시군구'][i][:5]
+        else:
+            data_시군구_아파트['시군구'][i] = data_시군구_아파트['시군구'][i][:5]    
+    
+            
+data_시군구_아파트
+
+
+# 시군구별 거래금액(만원) 평균
+data_시군구_아파트 = data_시군구_아파트.groupby(data_시군구_아파트.시군구)['거래금액(만원)'].mean()
+data_시군구_아파트 = data_시군구_아파트.reset_index()
+data_시군구_아파트
+
+
+#자료 불러오기
+법정경계_시군구 = gpd.read_file(input_path.joinpath('31.세종시_법정경계(읍면동).geojson'))
+법정경계_시군구
+
+
+data_아파트['lon']= (법정경계_시군구['geometry'].bounds['maxx'] + 법정경계_시군구['geometry'].bounds['minx'])/2
+data_아파트['lat'] = (법정경계_시군구['geometry'].bounds['maxy'] + 법정경계_시군구['geometry'].bounds['miny'])/2
+data_아파트 
+
+
+data = data_아파트[['시군구','거래금액(만원)']]
+
+# 지도
+아파트시세_map = folium.Map(location = [data_아파트['lat'].mean(), data_아파트['lon'].mean()],zoom_start = 11)
+
+아파트시세_map.choropleth(
+    geo_data = 법정경계_시군구,
+    data = data,
+    
+    columns=['시군구', '거래금액(만원)'],
+    key_on = 'feature.properties.EMD_KOR_NM',
+    fill_color = 'BuPu',
+    legend_name ='아파트시세',
+    )
+                       
+아파트시세_map
