@@ -573,33 +573,108 @@ data_시군구_아파트
 
 # 시군구별 거래금액(만원) 평균
 data_시군구_아파트 = data_시군구_아파트.groupby(data_시군구_아파트.시군구)['거래금액(만원)'].mean()
+data_시군구_아파트
+
 data_시군구_아파트 = data_시군구_아파트.reset_index()
 data_시군구_아파트
 
+for i in range(len(data_시군구_아파트['시군구'])):
+      data_시군구_아파트['시군구'][i] =  data_시군구_아파트['시군구'][i][1:]
+        
+data_시군구_아파트
 
-#자료 불러오기
+
+# 자료 불러오기
 법정경계_시군구 = gpd.read_file(input_path.joinpath('31.세종시_법정경계(읍면동).geojson'))
 법정경계_시군구
 
 
-data_아파트['lon']= (법정경계_시군구['geometry'].bounds['maxx'] + 법정경계_시군구['geometry'].bounds['minx'])/2
-data_아파트['lat'] = (법정경계_시군구['geometry'].bounds['maxy'] + 법정경계_시군구['geometry'].bounds['miny'])/2
-data_아파트 
+# 지역별 위도와 경도
+법정경계_시군구['lon']= (법정경계_시군구['geometry'].bounds['maxx'] + 법정경계_시군구['geometry'].bounds['minx'])/2
+법정경계_시군구['lat'] = (법정경계_시군구['geometry'].bounds['maxy'] + 법정경계_시군구['geometry'].bounds['miny'])/2
+
+data_아파트_lon_lat = 법정경계_시군구[['EMD_KOR_NM', 'lon', 'lat']]
+data_아파트_lon_lat = data_아파트_lon_lat.rename(columns={'EMD_KOR_NM':'시군구'})
+data_아파트_lon_lat
 
 
-data = data_아파트[['시군구','거래금액(만원)']]
+# 법정경계에 맞춰 아파트 행 추가
+data_시군구_아파트.loc[len(data_시군구_아파트)] = ['가람동', 0]
+data_시군구_아파트.loc[len(data_시군구_아파트)] = ['산울동', 0]
+data_시군구_아파트.loc[len(data_시군구_아파트)] = ['해밀동', 0]
+data_시군구_아파트.loc[len(data_시군구_아파트)] = ['합강동', 0]
+data_시군구_아파트.loc[len(data_시군구_아파트)] = ['집현동', 0]
+data_시군구_아파트.loc[len(data_시군구_아파트)] = ['연기면', 0]
+data_시군구_아파트
+
+
+data_시군구_아파트['시군구'][1] = '금남면'
+data_시군구_아파트['시군구'][8] = '부강면'
+data_시군구_아파트['시군구'][11] ='소정면'
+data_시군구_아파트['시군구'][14] ='연동면'
+data_시군구_아파트['시군구'][15] ='연서면'
+data_시군구_아파트['시군구'][16] ='장군면'
+data_시군구_아파트['시군구'][17]='전동면'
+data_시군구_아파트['시군구'][18]='전의면'
+
+
+data_시군구_아파트_info = pd.merge(data_아파트_lon_lat, data_시군구_아파트, on ='시군구', how="outer")
+data_시군구_아파트_info
+
+
+# 위도, 경도를 float 형으로 바꿈
+data_시군구_아파트_info['lon'] = data_시군구_아파트_info.lon.astype(float)
+data_시군구_아파트_info['lat'] = data_시군구_아파트_info.lat.astype(float)
+
 
 # 지도
-아파트시세_map = folium.Map(location = [data_아파트['lat'].mean(), data_아파트['lon'].mean()],zoom_start = 11)
+법정경계_시군구 = gpd.read_file(input_path.joinpath('31.세종시_법정경계(읍면동).geojson'))
+법정경계_시군구
 
-아파트시세_map.choropleth(
+아파트시세_map = folium.Map(location = [data_시군구_아파트_info['lat'].mean(), data_시군구_아파트_info['lon'].mean()] ,zoom_start = 11)
+
+data = data_시군구_아파트_info[['시군구','거래금액(만원)']]
+
+folium.Choropleth(
     geo_data = 법정경계_시군구,
     data = data,
-    
-    columns=['시군구', '거래금액(만원)'],
+    columns=['시군구','거래금액(만원)'],
     key_on = 'feature.properties.EMD_KOR_NM',
     fill_color = 'BuPu',
     legend_name ='아파트시세',
-    )
-                       
+    ).add_to(아파트시세_map)
+       
 아파트시세_map
+
+
+
+
+
+## 년도별 지역 전입자수
+
+# 자료 불러오기
+전입= pd.read_csv(input_path.joinpath('20.세종시_전입자수.csv') )
+전입
+
+# 자료 불러오기
+전출= pd.read_csv(input_path.joinpath('21.세종시_전출자수.csv') )
+전출
+
+
+# 지역별 총 전입자 수 구하기
+data_전입자수 = 전입.groupby('세종전입행정동')['전입자수'].agg('sum')
+data_전입자수
+
+# 지역별 총 전입자 수 구하기
+data_전출자수 = 전출.groupby('세종전출행정동')['전출자수'].agg('sum')
+data_전출자수
+
+
+ax = data_전입자수.plot(kind ='bar',title ='지역별 전입자 수', figsize =(15, 5), legend=True, fontsize = 10, color='white')
+ax.plot(data_전출자수, linestyle='--', color ='blue')
+ax.plot(data_전입자수, linestyle='--', color='red')
+#ax = data_전입.plot(kind ='bar', title ='지역별 전입자 수', figsize =(15, 5), legend=True, fontsize = 10)
+#plt.plot(data_전입, linestyle='--', color = 'orangered')
+ax.set_xlabel('지역', fontsize = 12)
+ax.set_ylabel('전입자 수', fontsize = 12)
+ax.legend(['전입자 수'], fontsize=12)
