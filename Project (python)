@@ -22,6 +22,9 @@ import seaborn as sns
 
 from pandas import DataFrame
 from geoband import API
+from folium import Map, CircleMarker, Vega, Popup
+from vincent import Bar
+import math
 
 
 
@@ -656,6 +659,7 @@ folium.Choropleth(
 전입= pd.read_csv(input_path.joinpath('20.세종시_전입자수.csv') )
 전입
 
+
 # 자료 불러오기
 전출= pd.read_csv(input_path.joinpath('21.세종시_전출자수.csv') )
 전출
@@ -678,3 +682,107 @@ ax.plot(data_전입자수, linestyle='--', color='red')
 ax.set_xlabel('지역', fontsize = 12)
 ax.set_ylabel('전입자 수', fontsize = 12)
 ax.legend(['전입자 수'], fontsize=12)
+
+
+
+
+
+## 지역별 지목 거래금액과 계약면적 표
+# 자료 불러오기
+토지 = pd.read_csv(input_path.joinpath('12.세종시_토지(매매)_실거래가.csv') , encoding='cp949')
+
+
+# 시군구 편집
+for i in range(len(토지['시군구'])):
+    토지['시군구'][i] = 토지['시군구'][i][8:12]
+토지
+
+
+# 지역별 지목의 계약 면적과 거래금액 표
+pd.set_option('display.max_rows', 700)
+data_토지 = round(토지.groupby(['시군구','지목'])[['계약면적(㎡)', '거래금액(만원)']].mean(),3)
+data_토지
+
+
+
+
+
+## 지역별 지목 거래금액과 거래면적 지도에 표현
+
+# 31.세종시_법정경계(읍면동).geojson 에서 만든 시군구별 위도, 경도 표
+지목_lon_lat = data_아파트_lon_lat
+지목_lon_lat
+
+
+data_토지 = data_토지.reset_index()
+data_토지
+
+
+# 지목의 계약면적 나타내는 표
+data_토지_고운동 = data_토지.iloc[0:5]
+data_토지_고운동1=data_토지_고운동[['지목', '계약면적(㎡)']]
+data_토지_고운동1 = data_토지_고운동1.set_index('지목')
+data_토지_고운동1
+
+
+# 지목의 거래금액 나타내는 표
+data_토지_고운동2=data_토지_고운동[['지목', '거래금액(만원)']]
+data_토지_고운동2 = data_토지_고운동2.set_index('지목')
+data_토지_고운동2
+
+
+# 지도
+
+vegabar = Bar(data_토지_고운동1, width = 400, height = 200).axis_titles(x = '지목', y = '계약면적')
+vegagraph = Vega(vegabar.to_json(), width = vegabar.width+100, height = vegabar.height + 50)
+vegabar2 = Bar(data_토지_고운동2, width = 400, height = 200).axis_titles(x = '지목', y = '거래금액')
+vegagraph2 = Vega(vegabar2.to_json(), width = vegabar2.width+100, height = vegabar2.height + 50)
+
+법정경계_읍면동 = gpd.read_file(input_path.joinpath('31.세종시_법정경계(읍면동).geojson'))
+법정경계_읍면동
+
+지목_map = folium.Map(location = [지목_lon_lat['lat'].mean(), 지목_lon_lat['lon'].mean()], zoom_start = 11)
+지목_map
+
+# 지역 구분
+지목_map.choropleth(
+    geo_data = 법정경계_읍면동,
+    key_on = 'feature.properties.EMD_KOR_NM',
+    fill_color = 'White',
+    fill_opacity = 0.3,
+    legend_name ='지목 종류',
+    )
+
+# 지역별 지목 계약면적 표시
+for i in range(len(지목_lon_lat['시군구'])):
+    latitude = 지목_lon_lat['lat'][i]
+    longtitude = 지목_lon_lat['lon'][i]
+    popups = folium.Popup(지목_lon_lat['시군구'][i], max_width=100)
+   
+    if(지목_lon_lat['시군구'][i] == '고운동'):
+        
+        popups = folium.Popup(max_width=500).add_child(vegagraph)
+        
+        
+    folium.CircleMarker([latitude, longtitude],
+                       popup = popups,
+                       color = 'midnightblue',
+                       fill = True).add_to(지목_map)
+    
+    
+# 지역별 지목 거래금액 표시
+for i in range(len(지목_lon_lat['시군구'])):
+    latitude = (지목_lon_lat['lat'][i]+0.001)
+    longtitude = (지목_lon_lat['lon'][i]+0.001)
+    
+    popups2 = folium.Popup(지목_lon_lat['시군구'][i], max_width=100)
+    if(지목_lon_lat['시군구'][i] == '고운동'):
+        popups2 = folium.Popup(max_width=500).add_child(vegagraph2)
+        
+    folium.CircleMarker([latitude, longtitude],
+                       popup = popups2,
+                       color = 'crimson',
+                       fill = True).add_to(지목_map)
+    
+지목_map
+
