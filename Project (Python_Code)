@@ -79,7 +79,7 @@ for path in list(input_path.glob('*.csv')) + list(input_path.glob('*.geojson')):
 ## 지역별 매매 평균값 
     
 # 자료 불러오기
-아파트_매매= pd.read_csv(input_path.joinpath('3.세종시_아파트(매매)_실거래가.csv'), encoding='cp949' )
+아파트_매매= pd.read_csv(input_path.joinpath('3.세종시_아파트(매매)_실거래가.csv'), encoding = 'utf-8' )
 아파트_매매
 
 # 세종 특별자치시 없애기
@@ -90,6 +90,7 @@ for i in range(len(아파트_매매['시군구'])):
 아파트_매매.columns
 
 # 주소별 거래금액 평균 구하기
+아파트_매매['거래금액(만원)'] = 아파트_매매['거래금액(만원)'].apply(lambda x: float(x.split()[0].replace(',','')))
 data_아파트 = 아파트_매매.groupby('시군구')['거래금액(만원)'].mean()
 data_아파트
 
@@ -99,7 +100,7 @@ matplotlib.font_manager._rebuild()
 plt.rc("font", family="Malgun Gothic")
 
 # 지역 별 평균 가격 그래프
-ax = data_아파트.plot(kind ='bar', title ='지역별 아파트 평균 가격', figsize =(15, 5), legend=True, fontsize = 10, color='#9467bd')
+ax = data_아파트.plot(kind ='bar', title ='지역별 아파트 평균 가격', figsize =(15, 5), legend=True, fontsize = 10, color='indigo')
 ax.set_xlabel('지역', fontsize = 12)
 ax.set_ylabel('아파트 평균 가격', fontsize = 12)
 ax.legend(['평균가격'], fontsize=12)
@@ -109,7 +110,7 @@ ax.legend(['평균가격'], fontsize=12)
 
 
 # 자료 불러오기
-연립다세대_매매= pd.read_csv(input_path.joinpath('4.세종시_연립다세대(매매)_실거래가.csv'), thousands = ',',encoding='cp949' )
+연립다세대_매매= pd.read_csv(input_path.joinpath('4.세종시_연립다세대(매매)_실거래가.csv'), thousands = ',', encoding = 'utf-8' )
 연립다세대_매매
 
 # 세종 특별자치시 없애기
@@ -122,12 +123,14 @@ for i in range(len(연립다세대_매매['시군구'])):
 # 주소별 거래금액 평균 구하기
 data_연립다세대 = 연립다세대_매매.groupby('시군구')['거래금액(만원)'].mean()
 data_연립다세대
+
+# 그래프 한글깨짐 방지
 import matplotlib 
 matplotlib.font_manager._rebuild()
 plt.rc("font", family="Malgun Gothic")
 
 # 지역 별 평균 가격 그래프
-ax = data_연립다세대.plot(kind ='bar', title ='지역별 연립다세대 평균 가격', figsize =(15, 5), legend=True, fontsize = 10, color='#17becf')
+ax = data_연립다세대.plot(kind ='bar', title ='지역별 연립다세대 평균 가격', figsize =(15, 5), legend=True, fontsize = 10, color='deepskyblue')
 ax.set_xlabel('지역', fontsize = 12)
 ax.set_ylabel('연립다세대 평균 가격', fontsize = 12)
 ax.legend(['평균가격'], fontsize=12)
@@ -135,8 +138,9 @@ ax.legend(['평균가격'], fontsize=12)
 
 
 
+
 # 자료 불러오기
-단독다가구_매매= pd.read_csv(input_path.joinpath('5.세종시_단독다가구(매매)_실거래가.csv'),encoding='cp949' )
+단독다가구_매매= pd.read_csv(input_path.joinpath('5.세종시_단독다가구(매매)_실거래가.csv'), encoding = 'utf-8' )
 단독다가구_매매
 
 # 세종 특별자치시 없애기
@@ -147,14 +151,17 @@ for i in range(len(단독다가구_매매['시군구'])):
 단독다가구_매매.columns
 
 # 주소별 거래금액 평균 구하기
+단독다가구_매매['거래금액(만원)'] = 단독다가구_매매['거래금액(만원)'].apply(lambda x: float(x.split()[0].replace(',','')))
 data_단독다가구 = 단독다가구_매매.groupby('시군구')['거래금액(만원)'].mean()
 data_단독다가구
+
+# 그래프 한글깨짐 방지
 import matplotlib 
 matplotlib.font_manager._rebuild()
 plt.rc("font", family="Malgun Gothic")
 
 # 지역 별 평균 가격 그래프
-ax = data_단독다가구.plot(kind='bar', title='지역별 단독다가구 평균 가격', figsize=(80,15), legend=True, fontsize=32, color='#8c564b')
+ax = data_단독다가구.plot(kind='bar', title='지역별 단독다가구 평균 가격', figsize=(80,15), legend=True, fontsize=32, color='midnightblue')
 ax.set_xlabel('지역',fontsize=30)
 ax.set_ylabel('단독다가구 평균 가격', fontsize=30)
 ax.legend(['평균 가격'],fontsize=30)
@@ -164,7 +171,7 @@ ax.legend(['평균 가격'],fontsize=30)
 
 
 # 자료 불러오기
-오피스텔_매매= pd.read_csv(input_path.joinpath('6.세종시_오피스텔(매매)_실거래가.csv'),encoding='cp949' )
+오피스텔_매매= pd.read_csv(input_path.joinpath('6.세종시_오피스텔(매매)_실거래가.csv'), encoding = 'utf-8' )
 오피스텔_매매
 
 # 세종 특별자치시 없애기
@@ -175,14 +182,17 @@ for i in range(len(오피스텔_매매['시군구'])):
 오피스텔_매매.columns
 
 # 주소별 거래금액 평균 구하기
+오피스텔_매매['거래금액(만원)'] = 오피스텔_매매['거래금액(만원)'].apply(lambda x: float(x.split()[0].replace(',','')))
 data_오피스텔 = 오피스텔_매매.groupby('시군구')['거래금액(만원)'].mean()
 data_오피스텔
+
+# 그래프 한글깨짐 방지
 import matplotlib 
 matplotlib.font_manager._rebuild()
 plt.rc("font", family="Malgun Gothic")
 
 # 지역 별 평균 가격 그래프
-ax = data_오피스텔.plot(kind ='bar', title ='지역별 오피스텔 평균 가격', figsize =(15, 5), legend=True, fontsize = 10, color='#e377c2')
+ax = data_오피스텔.plot(kind ='bar', title ='지역별 오피스텔 평균 가격', figsize =(15, 5), legend=True, fontsize = 10, color='palevioletred')
 ax.set_xlabel('지역', fontsize = 12)
 ax.set_ylabel('오피스텔 평균 가격', fontsize = 12)
 ax.legend(['평균가격'], fontsize=12)
@@ -190,10 +200,11 @@ ax.legend(['평균가격'], fontsize=12)
 
 
 
+
 ## 지역별 전, 월세 평균값 
 
 # 자료 불러오기
-아파트_전월세= pd.read_csv(input_path.joinpath('7.세종시_아파트(전월세)_실거래가.csv'),thousands = ',',encoding='cp949' )
+아파트_전월세= pd.read_csv(input_path.joinpath('7.세종시_아파트(전월세)_실거래가.csv'),thousands = ',',encoding='utf-8'' )
 아파트_전월세
 
 # 행 확인
@@ -237,7 +248,7 @@ for i, v in enumerate(data_아파트_전월세['월세(만원)','월세']):
     
     
 # 자료 불러오기
-연립다세대_전월세= pd.read_csv(input_path.joinpath('8.세종시_연립다세대(전월세)_실거래가.csv'),thousands = ',',encoding='cp949' )
+연립다세대_전월세= pd.read_csv(input_path.joinpath('8.세종시_연립다세대(전월세)_실거래가.csv'),thousands = ',',encoding='utf-8' )
 연립다세대_전월세
 
 # 행 확인
@@ -281,7 +292,7 @@ for i, v in enumerate(data_연립다세대_전월세['월세(만원)','월세'])
     
     
 # 자료 불러오기
-단독다가구_전월세= pd.read_csv(input_path.joinpath('9.세종시_단독다가구(전월세)_실거래가.csv'),thousands = ',',encoding='cp949' )
+단독다가구_전월세= pd.read_csv(input_path.joinpath('9.세종시_단독다가구(전월세)_실거래가.csv'),thousands = ',',encoding='utf-8' )
 단독다가구_전월세
 
 # 행 확인
@@ -326,7 +337,7 @@ for i, v in enumerate(data_단독다가구_전월세['월세(만원)','월세'])
     
     
 # 자료 불러오기
-오피스텔_전월세= pd.read_csv(input_path.joinpath('10.세종시_오피스텔(전월세)_실거래가.csv'),thousands = ',',encoding='cp949' )
+오피스텔_전월세= pd.read_csv(input_path.joinpath('10.세종시_오피스텔(전월세)_실거래가.csv'),thousands = ',',encoding='utf-8' )
 오피스텔_전월세
 
 # 행 확인
@@ -368,7 +379,9 @@ for i, v in enumerate(data_오피스텔_전월세['월세(만원)','월세']):
     
     
     
+    
 ## geojson 자료 확인
+
 연령별_거주인구 = gpd.read_file(input_path.joinpath('19.세종시_연령별_거주인구정보_격자.geojson'))
 연령별_거주인구
 
@@ -395,6 +408,7 @@ for i, v in enumerate(data_오피스텔_전월세['월세(만원)','월세']):
 
 지적도 = gpd.read_file(input_path.joinpath('33.세종시_지적도.geojson'))
 지적도
+
 
 
 
@@ -674,11 +688,10 @@ data_전출자수 = 전출.groupby('세종전출행정동')['전출자수'].agg(
 data_전출자수
 
 
+# 그래프 그리기
 ax = data_전입자수.plot(kind ='bar',title ='지역별 전입자 수', figsize =(15, 5), legend=True, fontsize = 10, color='white')
 ax.plot(data_전출자수, linestyle='--', color ='blue')
 ax.plot(data_전입자수, linestyle='--', color='red')
-#ax = data_전입.plot(kind ='bar', title ='지역별 전입자 수', figsize =(15, 5), legend=True, fontsize = 10)
-#plt.plot(data_전입, linestyle='--', color = 'orangered')
 ax.set_xlabel('지역', fontsize = 12)
 ax.set_ylabel('전입자 수', fontsize = 12)
 ax.legend(['전입자 수'], fontsize=12)
@@ -688,8 +701,9 @@ ax.legend(['전입자 수'], fontsize=12)
 
 
 ## 지역별 지목 거래금액과 계약면적 표
+
 # 자료 불러오기
-토지 = pd.read_csv(input_path.joinpath('12.세종시_토지(매매)_실거래가.csv') , encoding='cp949')
+토지 = pd.read_csv(input_path.joinpath('12.세종시_토지(매매)_실거래가.csv') , encoding='utf-8')
 
 
 # 시군구 편집
@@ -700,6 +714,7 @@ for i in range(len(토지['시군구'])):
 
 # 지역별 지목의 계약 면적과 거래금액 표
 pd.set_option('display.max_rows', 700)
+토지['거래금액(만원)'] = 토지['거래금액(만원)'].apply(lambda x: float(x.split()[0].replace(',','')))
 data_토지 = round(토지.groupby(['시군구','지목'])[['계약면적(㎡)', '거래금액(만원)']].mean(),3)
 data_토지 = data_토지.reset_index()
 data_토지
