@@ -1067,3 +1067,186 @@ for i in range(len(지목_lon_lat['시군구'])):
                        fill = True).add_to(지목_map)
 
 지목_map
+
+
+
+
+
+## 분양권 (시군구-단지명-분/입구분-평수 별 거래금액 표)
+
+# 자료 불러오기
+분양권 = pd.read_csv(input_path.joinpath('13.세종시_분양권_실거래가.csv'))
+
+
+# 세종 특별자치시 없애기
+for i in range(len(분양권['시군구'])):
+    분양권['시군구'][i] = 분양권['시군구'][i][8:]
+    
+분양권
+
+# 전용면적을 평수로 바꿈
+분양권['평수'] = '평수'
+분양권['평수크기'] = 0
+for i in range(len(분양권['전용면적(㎡)'])):
+    if 분양권['전용면적(㎡)'][i]/3.3 < 10:
+        분양권['평수'][i] = '10평 미만'
+        분양권['평수크기'][i] = 1
+    elif 분양권['전용면적(㎡)'][i]/3.3 < 20:
+        분양권['평수'][i] = '10평대'
+        분양권['평수크기'][i] = 10
+    elif 분양권['전용면적(㎡)'][i]/3.3 < 30:
+        분양권['평수'][i] = '20평대'
+        분양권['평수크기'][i] = 20
+    elif 분양권['전용면적(㎡)'][i]/3.3 < 40:
+        분양권['평수'][i] = '30평대'
+        분양권['평수크기'][i] = 30
+    elif 분양권['전용면적(㎡)'][i]/3.3 < 50:
+        분양권['평수'][i] = '40평대'
+        분양권['평수크기'][i] = 40
+    elif 분양권['전용면적(㎡)'][i]/3.3 < 60:
+        분양권['평수'][i] = '50평대'
+        분양권['평수크기'][i] = 50
+    elif 분양권['전용면적(㎡)'][i]/3.3 < 70:
+        분양권['평수'][i] = '60평대'
+        분양권['평수크기'][i] = 60
+        
+분양권
+
+
+# 시군구 - 단지 - 입/분 - 평수 별 평균 금액 표
+분양권['거래금액(만원)'] = 분양권['거래금액(만원)'].apply(lambda x: float(x.split()[0].replace(',','')))
+data_분양권 = round(분양권.groupby(['시군구','단지명','분/입구분','평수'])[['거래금액(만원)']].mean(),3)
+data_분양권
+
+
+
+
+
+## 분양권 그래프
+
+#분양권['거래금액(만원)'] = 분양권['거래금액(만원)'].apply(lambda x: float(x.split()[0].replace(',','')))
+data_분양권 = round(분양권.groupby(['시군구','단지명','분/입구분','평수'])[['거래금액(만원)', '평수크기']].mean(),3)
+data_분양권
+
+
+# 시군구별로 분리
+data_분양권 = data_분양권.reset_index()
+data_분양권_고운동 = data_분양권[data_분양권['시군구'] == '고운동']
+data_분양권_나성동 = data_분양권[data_분양권['시군구'] == '나성동']
+data_분양권_다정동 = data_분양권[data_분양권['시군구'] == '다정동']
+data_분양권_대평동 = data_분양권[data_분양권['시군구'] == '대평동']
+data_분양권_도담동 = data_분양권[data_분양권['시군구'] == '도담동']
+data_분양권_반곡동 = data_분양권[data_분양권['시군구'] == '반곡동']
+data_분양권_보람동 = data_분양권[data_분양권['시군구'] == '보람동']
+data_분양권_새롬동 = data_분양권[data_분양권['시군구'] == '새롬동']
+data_분양권_소담동 = data_분양권[data_분양권['시군구'] == '소담동']
+data_분양권_어진동 = data_분양권[data_분양권['시군구'] == '어진동']
+data_분양권_종촌동 = data_분양권[data_분양권['시군구'] == '종촌동']
+data_분양권_집현동 = data_분양권[data_분양권['시군구'] == '집현동']
+data_분양권_해밀동 = data_분양권[data_분양권['시군구'] == '해밀동']
+
+
+# 그래프 한글깨짐 방지
+import matplotlib 
+matplotlib.font_manager._rebuild()
+plt.rc("font", family="Malgun Gothic")
+
+# '분'은 보라, '입'은 노랑, 평수별로 동그라미 크기가 다름
+고운동_scatter = plt.figure(figsize=(15,4))
+고운동_scatter = plt.xticks(rotation = 45)
+고운동_scatter = plt.scatter(data_분양권_고운동['단지명'],data_분양권_고운동['거래금액(만원)'], c = data_분양권_고운동['분/입구분']=='입', edgecolors='grey', linewidth=2, s=data_분양권_고운동['평수크기']*3, alpha = 0.5)
+고운동_scatter = plt.xlabel('단지명')
+고운동_scatter = plt.ylabel('거래금액(만원)')
+고운동_scatter = plt.title('고운동')
+
+
+나성동_scatter = plt.figure(figsize=(15,4))
+나성동_scatter = plt.xticks(rotation = 45)
+나성동_scatter = plt.scatter(data_분양권_나성동['단지명'],data_분양권_나성동['거래금액(만원)'], c = data_분양권_나성동['분/입구분']=='입', edgecolors='grey', linewidth=2, s=data_분양권_나성동['평수크기']*3, alpha = 0.5)
+나성동_scatter = plt.xlabel('단지명')
+나성동_scatter = plt.ylabel('거래금액(만원)')
+나성동_scatter = plt.title('나성동')
+
+다정동_scatter = plt.figure(figsize=(15,4))
+다정동_scatter = plt.xticks(rotation = 90)
+다정동_scatter = plt.scatter(data_분양권_다정동['단지명'],data_분양권_다정동['거래금액(만원)'], c = data_분양권_다정동['분/입구분']=='입', edgecolors='grey', linewidth=2, s=data_분양권_다정동['평수크기']*3, alpha = 0.5)
+다정동_scatter = plt.xlabel('단지명')
+다정동_scatter = plt.ylabel('거래금액(만원)')
+다정동_scatter = plt.title('다정동')
+
+대평동_scatter = plt.figure(figsize=(15,4))
+고운동_scatter = plt.xticks(rotation = 45)
+대평동_scatter = plt.scatter(data_분양권_대평동['단지명'],data_분양권_대평동['거래금액(만원)'], c = data_분양권_대평동['분/입구분']=='입', edgecolors='grey', linewidth=2, s=data_분양권_대평동['평수크기']*3, alpha = 0.5)
+대평동_scatter = plt.xlabel('단지명')
+대평동_scatter = plt.ylabel('거래금액(만원)')
+대평동_scatter = plt.title('대평동')
+
+도담동_scatter = plt.figure(figsize=(15,4))
+도담동_scatter = plt.scatter(data_분양권_도담동['단지명'],data_분양권_도담동['거래금액(만원)'], c = data_분양권_도담동['분/입구분']=='입', edgecolors='grey', linewidth=2, s=data_분양권_도담동['평수크기']*3, alpha = 0.5)
+도담동_scatter = plt.xlabel('단지명')
+도담동_scatter = plt.ylabel('거래금액(만원)')
+도담동_scatter = plt.title('도담동')
+
+반곡동_scatter = plt.figure(figsize=(15,4))
+반곡동_scatter = plt.xticks(rotation = 90)
+반곡동_scatter = plt.scatter(data_분양권_반곡동['단지명'],data_분양권_반곡동['거래금액(만원)'], c = data_분양권_반곡동['분/입구분']=='입', edgecolors='grey', linewidth=2, s=data_분양권_반곡동['평수크기']*3, alpha = 0.5)
+반곡동_scatter = plt.xlabel('단지명')
+반곡동_scatter = plt.ylabel('거래금액(만원)')
+반곡동_scatter = plt.title('반곡동')
+
+보람동_scatter = plt.figure(figsize=(15,4))
+보람동_scatter = plt.xticks(rotation = 90)
+보람동_scatter = plt.scatter(data_분양권_보람동['단지명'],data_분양권_보람동['거래금액(만원)'], c = data_분양권_보람동['분/입구분']=='입', edgecolors='grey', linewidth=2, s=data_분양권_보람동['평수크기']*3, alpha = 0.5)
+보람동_scatter = plt.xlabel('단지명')
+보람동_scatter = plt.ylabel('거래금액(만원)')
+보람동_scatter = plt.title('보람동')
+
+새롬동_scatter = plt.figure(figsize=(15,4))
+새롬동_scatter = plt.xticks(rotation = 90)
+새롬동_scatter = plt.scatter(data_분양권_새롬동['단지명'],data_분양권_새롬동['거래금액(만원)'], c = data_분양권_새롬동['분/입구분']=='입', edgecolors='grey', linewidth=2, s=data_분양권_새롬동['평수크기']*3, alpha = 0.5)
+새롬동_scatter = plt.xlabel('단지명')
+새롬동_scatter = plt.ylabel('거래금액(만원)')
+새롬동_scatter = plt.title('새롬동')
+
+소담동_scatter = plt.figure(figsize=(15,4))
+고운동_scatter = plt.xticks(rotation = 45)
+소담동_scatter = plt.scatter(data_분양권_소담동['단지명'],data_분양권_소담동['거래금액(만원)'], c = data_분양권_소담동['분/입구분']=='입', edgecolors='grey', linewidth=2, s=data_분양권_소담동['평수크기']*3, alpha = 0.5)
+소담동_scatter = plt.xlabel('단지명')
+소담동_scatter = plt.ylabel('거래금액(만원)')
+소담동_scatter = plt.title('소담동')
+
+어진동_scatter = plt.figure(figsize=(15,4))
+어진동_scatter = plt.scatter(data_분양권_어진동['단지명'],data_분양권_어진동['거래금액(만원)'], c = data_분양권_어진동['분/입구분']=='입', edgecolors='grey', linewidth=2, s=data_분양권_어진동['평수크기']*3, alpha = 0.5)
+어진동_scatter = plt.xlabel('단지명')
+어진동_scatter = plt.ylabel('거래금액(만원)')
+어진동_scatter = plt.title('어진동')
+
+종촌동_scatter = plt.figure(figsize=(15,4))
+종촌동_scatter = plt.scatter(data_분양권_종촌동['단지명'],data_분양권_종촌동['거래금액(만원)'], c = data_분양권_종촌동['분/입구분']=='분', edgecolors='grey', linewidth=2, s=data_분양권_종촌동['평수크기']*3, alpha = 0.5)
+종촌동_scatter = plt.xlabel('단지명')
+종촌동_scatter = plt.ylabel('거래금액(만원)')
+종촌동_scatter = plt.title('종촌동')
+
+집현동_scatter = plt.figure(figsize=(15,4))
+집현동_scatter = plt.scatter(data_분양권_집현동['단지명'],data_분양권_집현동['거래금액(만원)'], c = data_분양권_집현동['분/입구분']=='입', edgecolors='grey', linewidth=2, s=data_분양권_집현동['평수크기']*3, alpha = 0.5)
+집현동_scatter = plt.xlabel('단지명')
+집현동_scatter = plt.ylabel('거래금액(만원)')
+집현동_scatter = plt.title('집현동')
+
+해밀동_scatter = plt.figure(figsize=(15,4))
+해밀동_scatter = plt.scatter(data_분양권_해밀동['단지명'],data_분양권_해밀동['거래금액(만원)'], c = data_분양권_해밀동['분/입구분']=='입', edgecolors='grey', linewidth=2, s=data_분양권_해밀동['평수크기']*3, alpha = 0.5)
+해밀동_scatter = plt.xlabel('단지명')
+해밀동_scatter = plt.ylabel('거래금액(만원)')
+해밀동_scatter = plt.title('해밀동')
+
+
+## 인구현황
+
+
+
+
+
+
+
+
+
