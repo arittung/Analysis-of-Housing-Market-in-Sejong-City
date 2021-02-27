@@ -1240,7 +1240,135 @@ plt.rc("font", family="Malgun Gothic")
 해밀동_scatter = plt.title('해밀동')
 
 
-## 인구현황
+## 인구현황 표
+
+# 자료 불러오기
+연령별_인구 = pd.read_csv(input_path.joinpath('22.세종시_연령별_인구현황.csv'))
+
+# 열 이름 편집
+for i in range(연령별_인구.shape[1]):
+    if( 연령별_인구.columns[i] != '읍면동'):
+        임시_data = 연령별_인구.columns[i][7:]
+        연령별_인구 = 연령별_인구.rename({연령별_인구.columns[i]:임시_data }, axis = 'columns')
+연령별_인구
+
+
+# 행과 열 이름 뒤바꾸기
+data_연령별_인구 = 연령별_인구.transpose().reset_index()[1:]
+data_연령별_인구 = data_연령별_인구.rename(columns={'index':'나이_성별',0:'세종특별자치시', 1:'조치원읍', 2:'연기면',3:'연동면', 4:'부강면',5:'금남면',6:'장군면',7:'연서면',8:'전의면',9:'전동면', 10:'소정면', 11:'한솔동',12:'새롬동', 13:'도담동',14:'아름동',15:'종촌동',16:'고운동',17:'소담동',18:'보람동',19:'대평동',20:'다정동'})
+data_연령별_인구
+
+# 나이_성별 / 시군구별 표
+data_연령별_인구 = data_연령별_인구.groupby(['나이_성별']).sum()
+data_연령별_인구 = data_연령별_인구.reset_index()
+data_연령별_인구
+
+
+# 성별과 나이 나누기
+# 성별
+data_연령별_인구['성별'] = '여자'
+for i in range(13):
+    data_연령별_인구['성별'][i] = '남자'
+
+# 나이
+for i in range(len(data_연령별_인구['성별'])):
+    data_연령별_인구['나이_성별'][i] = data_연령별_인구['나이_성별'][i][3:]
+    data_연령별_인구['나이_성별'][i] = data_연령별_인구['나이_성별'][i][:-1]
+    
+data_연령별_인구 = data_연령별_인구.rename(columns = {'나이_성별' : '나이분류'})
+
+data_연령별_인구
+
+
+data_연령별_인구['나이'] = 0
+for i in range(len(data_연령별_인구['성별'])):
+    print(data_연령별_인구['나이분류'][i])
+    if(data_연령별_인구['나이분류'][i] == '0~9세'):
+        data_연령별_인구['나이'][i] = 1
+    elif(data_연령별_인구['나이분류'][i] == '10~19세'):
+        data_연령별_인구['나이'][i] = 10
+    elif(data_연령별_인구['나이분류'][i] == '20~29세'):
+        data_연령별_인구['나이'][i] = 20
+    elif(data_연령별_인구['나이분류'][i] == '30~39세'):
+        data_연령별_인구['나이'][i] = 30
+    elif(data_연령별_인구['나이분류'][i] == '40~49세'):
+        data_연령별_인구['나이'][i] = 40
+    elif(data_연령별_인구['나이분류'][i] == '50~59세'):
+        data_연령별_인구['나이'][i] = 50
+    elif(data_연령별_인구['나이분류'][i] == '60~69세'):
+        data_연령별_인구['나이'][i] = 60
+    elif(data_연령별_인구['나이분류'][i] == '70~79세'):
+        data_연령별_인구['나이'][i] = 70
+    elif(data_연령별_인구['나이분류'][i] == '80~89세'):
+        data_연령별_인구['나이'][i] = 80
+    elif(data_연령별_인구['나이분류'][i] == '90~99세'):
+        data_연령별_인구['나이'][i] = 90
+    elif(data_연령별_인구['나이분류'][i] == '100세_이상'):
+        data_연령별_인구['나이'][i] = 100
+data_연령별_인구
+
+# 열 순서 바꾸기
+data_연령별_인구 = data_연령별_인구[['성별', '나이분류','나이','세종특별자치시', '조치원읍', '연기면', '연동면', '부강면', '금남면', '장군면', '연서면',
+       '전의면', '전동면', '소정면', '한솔동', '새롬동', '도담동', '아름동', '종촌동', '고운동', '소담동',
+       '보람동', '대평동', '다정동']]
+data_연령별_인구
+
+# 나이가 아닌 행 삭제
+data_연령별_인구 = data_연령별_인구.drop(index=[11, 12, 24, 25], axis = 0)
+data_연령별_인구
+
+
+
+
+
+
+## 인구현황 그래프
+
+# 인덱스 재설정
+data_연령별_인구 = data_연령별_인구.reset_index()
+
+# 시군구 표 생성
+data_지역별_인구 = data_연령별_인구[['조치원읍', '연기면','연동면', '부강면','금남면','장군면','연서면','전의면','전동면', '소정면', '한솔동','새롬동', '도담동','아름동','종촌동','고운동','소담동','보람동','대평동','다정동']]
+data_지역별_인구
+
+
+# 그래프 한글깨짐 방지
+import matplotlib 
+matplotlib.font_manager._rebuild()
+plt.rc("font", family="Malgun Gothic")
+
+style.use('seaborn-talk')
+fig = plt.figure(figsize = (70,13))
+ax = fig.add_subplot(111, projection ='3d')
+
+# x : 지역 / y : 나이 / z : 인구 수
+j = 0
+#colors = ['red','red','red','red','red','red','red','red','red','red']
+colors = ['red','saddlebrown','darkorange','sienna','gold','darkgreen','lime','dodgerblue','navy','purple','palevioletred']
+#colors = ['blue','blue','blue','blue','blue','blue','blue','blue','blue','blue']
+address = ['조치원읍', '연기면','연동면', '부강면','금남면','장군면','연서면','전의면','전동면', '소정면', '한솔동','새롬동', '도담동','아름동','종촌동','고운동','소담동','보람동','대평동','다정동']
+    
+for c, r in zip(colors, [10,9,8,7,6,5,4,3,2, 1, 0]):
+    indexs = address
+    tmp = data_지역별_인구.iloc[j]
+    tmp = tmp.reset_index()
+    #print(tmp)
+    tmp = np.array(tmp[j].tolist())
+    #tmp
+    heights = tmp
+    #print( r, indexs, heights, c)
+    ax.bar(indexs, heights, zs = r, zdir = 'y', color = c, alpha = 0.8)
+    j = j+1
+
+ax.set_yticklabels(['10살 미만','10대','20대','30대','40대','50대','60대','70대','80대','90대','100살이상'], rotation =-20)    
+ax.set_yticks(np.arange(0,11,1))
+ax.set_xticklabels(address,rotation = 45)
+ax.set_xlabel('지역')
+ax.set_ylabel('나이')
+ax.set_zlabel('인구수')    
+    
+    
+
 
 
 
