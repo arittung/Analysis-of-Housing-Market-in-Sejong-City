@@ -1364,7 +1364,7 @@ ax = fig.add_subplot(111, projection ='3d')
 j = 0
 colors = ['lightcoral','tomato','sandybrown','moccasin', 'burlywood','khaki','yellowgreen','lightgreen','paleturquoise','skyblue','royalblue', 'slateblue', 'mediumpurple', 'plum', 'pink', 'violet', 'blueviolet', 'slategrey', 'darkslategray', 'navy']
 address = ['조치원읍', '연기면','연동면', '부강면','금남면','장군면','연서면','전의면','전동면', '소정면', '한솔동','새롬동', '도담동','아름동','종촌동','고운동','소담동','보람동','대평동','다정동']
-ages = ['10살_미만','10대','20대','30대','40대','50대','60대','70대','80대','90대','100세_이상']   
+ages = ['10살_미만','10대','20대','30대','40대','50대','60대','70대','80대','90대','10세_이상']   
 age=[1,10,20,30,40,50,60,70,80,90,100]
 
 for c, r in zip(colors, [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19]):
@@ -1400,7 +1400,7 @@ ax = fig.add_subplot(111, projection ='3d')
 j = 0
 colors = ['lightcoral','tomato','sandybrown','moccasin', 'burlywood','khaki','yellowgreen','lightgreen','paleturquoise','skyblue','royalblue', 'slateblue', 'mediumpurple', 'plum', 'pink', 'violet', 'blueviolet', 'slategrey', 'darkslategray', 'navy']
 address = ['조치원읍', '연기면','연동면', '부강면','금남면','장군면','연서면','전의면','전동면', '소정면', '한솔동','새롬동', '도담동','아름동','종촌동','고운동','소담동','보람동','대평동','다정동']
-ages = ['10살_미만','10대','20대','30대','40대','50대','60대','70대','80대','90대','100세_이상']   
+ages = ['10살_미만','10대','20대','30대','40대','50대','60대','70대','80대','90대','10세_이상']   
 age=[1,10,20,30,40,50,60,70,80,90,100]
 
 for c, r in zip(colors, [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19]):
@@ -1422,6 +1422,644 @@ ax.set_xticklabels(ages,rotation = 45, fontsize = 23)
 ax.set_ylabel('지역')
 ax.set_xlabel('나이')
 ax.set_zlabel('인구수')        
+
+
+
+
+
+## 지역별 세대원수별 세대수 그래프
+
+# 자료 불러오기
+지역별_세대수 = pd.read_csv(input_path.joinpath('28.세종시_지역별_세대원수별_세대수.csv'))
+지역별_세대수
+
+
+# 세대 수만 가져오기
+data_지역별_세대수 = 지역별_세대수[['1인', '2인', '3인', '4인', '5인', '6인', '7인', '8인', '9인',
+       '10인이상']]
+data_지역별_세대수
+
+
+# 지역별 세대원수별 세대수 그래프
+style.use('seaborn-talk')
+fig = plt.figure(figsize = (70,23))
+ax = fig.add_subplot(111, projection ='3d')
+
+
+# x : 세대원수 / y : 지역 / z : 세대 수
+j = 0
+colors = ['lightcoral','tomato','sandybrown','moccasin', 'burlywood','khaki','yellowgreen','lightgreen','paleturquoise','skyblue','royalblue', 'slateblue', 'mediumpurple', 'plum', 'pink', 'violet', 'blueviolet', 'slategrey', 'darkslategray']
+address = ['조치원읍', '연기면','연동면', '부강면','금남면','장군면','연서면','전의면','전동면', '소정면', '한솔동','새롬동', '도담동','아름동','종촌동','고운동','소담동','보람동','대평동']
+populations = ['1인','2인','3인','4인','5인','6인','7인','8인','9인','10인 이상']   
+population =[1,2,3,4,5,6,7,8,9,10]
+
+for c, r in zip(colors, [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]):
+    indexs = population
+    tmp = data_지역별_세대수.iloc[j]
+    tmp = tmp.reset_index()
+    tmp = np.array(tmp[j].tolist())
+    heights = tmp
+    ax.plot(indexs, heights, zs = r, zdir = 'y', color = c, alpha = 0.7, marker ='o')
+    j = j+1
+
+
+ax.set_yticks(np.arange(0,19,1))
+ax.set_yticklabels(address, fontsize = 17, rotation = -20)
+ax.set_xticks(np.arange(1,11,1))
+ax.set_xticklabels(populations,rotation = 45, fontsize = 23)
+ax.set_ylabel('지역')
+ax.set_xlabel('세대원수')
+ax.set_zlabel('세대수')   
+
+
+
+
+
+## 지역별 총 세대 수 그래프
+
+# 지역 별 평균 가격 그래프
+plt.figure(figsize=(20,6))
+plt.bar(지역별_세대수['읍면동'],지역별_세대수['계'],color = 'lightcoral')
+plt.xticks(rotation = 90, fontsize=13)
+plt.legend(['세대수'])
+plt.title('지역별 세대수')
+
+
+
+
+
+## 월평균 가구 소득과 소비지출액 그래프
+
+# 자료 불러오기
+가구소득 = pd.read_csv(input_path.joinpath('27.세종시_월평균_가구소득.csv'))
+가구소득 = 가구소득.replace('-', 0)
+가구소득
+
+
+# 자료 불러오기
+소비지출액 = pd.read_csv(input_path.joinpath('25.세종시_가구_월평균_소비지출액.csv'))
+소비지출액
+
+
+# 중분류, 소분류 제거
+data_가구소득_읍면동 = 가구소득.iloc[1:4, 2:]
+data_가구소득_성별 = 가구소득.iloc[4:6,2:]
+data_가구소득_거주기간 = 가구소득.iloc[6:8,2:]
+data_가구소득_연령 = 가구소득.iloc[8:15,2:]
+data_가구소득_교육정도 = 가구소득.iloc[15:19,2:]
+data_가구소득_직업 = 가구소득.iloc[19:25,2:]
+data_가구소득_혼인상태 = 가구소득.iloc[25:28,2:]
+data_가구소득_맞벌이여부 = 가구소득.iloc[28:30,2:]
+data_가구소득_주거점유형태 = 가구소득.iloc[30:33,2:]
+
+data_소비지출액_읍면동 = 소비지출액.iloc[1:4, 2:]
+data_소비지출액_성별 = 소비지출액.iloc[4:6,2:]
+data_소비지출액_거주기간 = 소비지출액.iloc[6:8,2:]
+data_소비지출액_연령 = 소비지출액.iloc[8:15,2:]
+data_소비지출액_교육정도 = 소비지출액.iloc[15:19,2:]
+data_소비지출액_직업 = 소비지출액.iloc[19:25,2:]
+data_소비지출액_혼인상태 = 소비지출액.iloc[25:28,2:]
+data_소비지출액_가구소득 = 소비지출액.iloc[28:36,2:]
+data_소비지출액_맞벌이여부 = 소비지출액.iloc[36:38,2:]
+data_소비지출액_주거점유형태 = 소비지출액.iloc[38:41,2:]
+
+
+# str->int type으로 바꾸기
+data_가구소득_읍면동 = data_가구소득_읍면동.astype(float)
+data_가구소득_성별 = data_가구소득_성별.astype(float)
+data_가구소득_거주기간 = data_가구소득_거주기간.astype(float)
+data_가구소득_연령 = data_가구소득_연령.astype(float)
+data_가구소득_교육정도 = data_가구소득_교육정도.astype(float)
+data_가구소득_직업 = data_가구소득_직업.astype(float)
+data_가구소득_혼인상태 = data_가구소득_혼인상태.astype(float)
+data_가구소득_맞벌이여부 = data_가구소득_맞벌이여부.astype(float)
+data_가구소득_주거점유형태 = data_가구소득_주거점유형태.astype(float)
+
+data_소비지출액_읍면동 = data_소비지출액_읍면동.astype(float)
+data_소비지출액_성별 = data_소비지출액_성별.astype(float)
+data_소비지출액_거주기간 = data_소비지출액_거주기간.astype(float)
+data_소비지출액_연령 = data_소비지출액_연령.astype(float)
+data_소비지출액_교육정도 = data_소비지출액_교육정도.astype(float)
+data_소비지출액_직업 = data_소비지출액_직업.astype(float)
+data_소비지출액_혼인상태 = data_소비지출액_혼인상태.astype(float)
+data_소비지출액_가구소득 = data_소비지출액_가구소득.astype(float)
+data_소비지출액_맞벌이여부 = data_소비지출액_맞벌이여부.astype(float)
+data_소비지출액_주거점유형태 = data_소비지출액_주거점유형태.astype(float)
+
+
+# 그래프
+
+fig, axes = plt.subplots(9, 2,constrained_layout=True, sharey=True)
+fig.subplots_adjust(top = 8,wspace=1)
+#fig.suptitle('성별 월평균 가구소득과 소비지출액', fontsize=16, fontweight='bold')
+
+# 소득 그래프
+읍면동_소득_graph = data_가구소득_읍면동.plot.bar(ax=axes[0][0],fontsize=15,stacked=True,rot=0,color = ['crimson','coral','lemonchiffon','chartreuse','deepskyblue','midnightblue','darkviolet','hotpink'])
+읍면동_소득_graph.set_xticklabels(['조치원읍','면지역','동지역'])
+읍면동_소득_graph.set_title('읍면동별 월평균 가구소득',fontsize=20)
+읍면동_소득_graph.legend(loc='center left', bbox_to_anchor=(1,0.5))
+for p in 읍면동_소득_graph.patches:
+    x, y, width, height = p.get_bbox().bounds
+    if height == 0.0:
+        continue
+    읍면동_소득_graph.text(x+width, y+height/2, "%.1f %%"%(height), va='center',fontsize=12)
+
+# 지출 그래프
+읍면동_지출_graph = data_소비지출액_읍면동.plot.bar(ax=axes[0][1],fontsize=15,stacked=True,rot=0,color = ['lightpink','crimson','coral','lemonchiffon','chartreuse','deepskyblue','midnightblue','darkviolet'])
+읍면동_지출_graph.set_xticklabels(['조치원읍','면지역','동지역'])
+읍면동_지출_graph.set_title('읍면동별 월평균 소비지출액',fontsize=20)
+읍면동_지출_graph.legend(loc='center left', bbox_to_anchor=(1,0.5))
+for p in 읍면동_지출_graph.patches:
+    x, y, width, height = p.get_bbox().bounds
+    if height == 0.0:
+        continue
+    읍면동_지출_graph.text(x+width, y+height/2, "%.1f %%"%(height), va='center',fontsize=10)
+
+    
+# 소득 그래프    
+성별_소득_graph = data_가구소득_성별.plot.bar(ax=axes[1][0],stacked=True,rot=0,fontsize=15, color = ['crimson','coral','lemonchiffon','chartreuse','deepskyblue','midnightblue','darkviolet','hotpink'])
+#성별_소득_graph = 성별_graph.add_subplot(2, 2, 1)
+성별_소득_graph.set_xticklabels(['남성', '여성'])
+성별_소득_graph.set_title('성별 월평균 가구소득', fontsize = 20)
+성별_소득_graph.legend(loc='center left', bbox_to_anchor=(1,0.5))
+for p in 성별_소득_graph.patches:
+    x, y, width, height = p.get_bbox().bounds
+    if height == 0.0:
+        continue
+    성별_소득_graph.text(x+width, y+height/2, "%.1f %%"%(height), va='center', ha='center', fontsize = 12)
+
+# 지출 그래프
+성별_지출_graph = data_소비지출액_성별.plot.bar(ax=axes[1][1],stacked=True,rot=0,fontsize=15,color = ['lightpink','crimson','coral','lemonchiffon','chartreuse','deepskyblue','midnightblue','darkviolet'])
+성별_지출_graph.set_xticklabels(['남성', '여성'])
+성별_지출_graph.set_title('성별 월평균 소비지출액', fontsize = 20)
+성별_지출_graph.legend(loc='center left', bbox_to_anchor=(1,0.5))
+for p in 성별_지출_graph.patches:
+    x, y, width, height = p.get_bbox().bounds
+    if height == 0.0:
+        continue
+    성별_지출_graph.text(x+width, y+height/2, "%.1f %%"%(height), va='center', fontsize = 12)    
+    
+    
+    
+# 소득 그래프    
+거주기간_소득_graph = data_가구소득_거주기간.plot.bar(ax=axes[2][0], fontsize=15,stacked=True,rot=0,color = ['crimson','coral','lemonchiffon','chartreuse','deepskyblue','midnightblue','darkviolet','hotpink'])
+거주기간_소득_graph.set_xticklabels(['출범이전', '출범이후'])
+거주기간_소득_graph.set_title('거주기간별 월평균 가구소득', fontsize = 20)
+거주기간_소득_graph.legend(loc='center left', bbox_to_anchor=(1,0.5))
+for p in 거주기간_소득_graph.patches:
+    x, y, width, height = p.get_bbox().bounds
+    if height == 0.0:
+        continue
+    거주기간_소득_graph.text(x+width, y+height/2, "%.1f %%"%(height), va='center', fontsize = 12)
+
+# 지출 그래프
+거주기간_지출_graph = data_소비지출액_거주기간.plot.bar(ax=axes[2][1], fontsize=15,stacked=True,rot=0,color = ['lightpink','crimson','coral','lemonchiffon','chartreuse','deepskyblue','midnightblue','darkviolet'])
+거주기간_지출_graph.set_xticklabels(['출범이전', '출범이후'])
+거주기간_지출_graph.set_title('거주기간별 월평균 소비지출액', fontsize = 20)
+거주기간_지출_graph.legend(loc='center left', bbox_to_anchor=(1,0.5))
+for p in 거주기간_지출_graph.patches:
+    x, y, width, height = p.get_bbox().bounds
+    if height == 0.0:
+        continue
+    거주기간_지출_graph.text(x+width, y+height/2, "%.1f %%"%(height), va='center', fontsize = 12)
+    
+    
+    
+# 소득 그래프    
+연령_소득_graph = data_가구소득_연령.plot.bar(ax=axes[3][0], fontsize=15,stacked=True,rot=0,color = ['crimson','coral','lemonchiffon','chartreuse','deepskyblue','midnightblue','darkviolet','hotpink'])
+연령_소득_graph.set_xticklabels(['13-19세','20-29세','30-39세', '40-49세','50-59세','60세이상','65세이상'], rotation=45)
+연령_소득_graph.set_title('연령_소득별 월평균 가구소득',fontsize = 20)
+연령_소득_graph.legend(loc='center left', bbox_to_anchor=(1,0.5))
+for p in 연령_소득_graph.patches:
+    x, y, width, height = p.get_bbox().bounds
+    if height == 0.0:
+        continue
+    연령_소득_graph.text(x+width, y+height/2, "%.1f %%"%(height), va='center',fontsize = 8)
+
+# 지출 그래프
+연령_지출_graph = data_소비지출액_연령.plot.bar(ax=axes[3][1], fontsize=15,stacked=True,rot=0,color = ['lightpink','crimson','coral','lemonchiffon','chartreuse','deepskyblue','midnightblue','darkviolet'])
+연령_지출_graph.set_xticklabels(['13-19세','20-29세','30-39세', '40-49세','50-59세','60세이상','65세이상'], rotation=45)
+연령_지출_graph.set_title('연령_소득별 월평균 소비지출액',fontsize = 20)
+연령_지출_graph.legend(loc='center left', bbox_to_anchor=(1,0.5))
+for p in 연령_지출_graph.patches:
+    x, y, width, height = p.get_bbox().bounds
+    if height == 0.0:
+        continue
+    연령_지출_graph.text(x+width, y+height/2, "%.1f %%"%(height), va='center',fontsize = 8)
+    
+    
+    
+# 소득 그래프
+교육정도_소득_graph = data_가구소득_교육정도.plot.bar(ax=axes[4][0], fontsize=15,stacked=True,rot=0,color = ['crimson','coral','lemonchiffon','chartreuse','deepskyblue','midnightblue','darkviolet','hotpink'])
+교육정도_소득_graph.set_xticklabels(['초졸이하','중졸','고졸','대학이상'])
+교육정도_소득_graph.set_title('교육정도별 월평균 가구소득',fontsize=20)
+교육정도_소득_graph.legend(loc='center left', bbox_to_anchor=(1,0.5))
+for p in 교육정도_소득_graph.patches:
+    x, y, width, height = p.get_bbox().bounds
+    if height == 0.0:
+        continue
+    교육정도_소득_graph.text(x+width, y+height/2, "%.1f %%"%(height), va='center',fontsize=12)
+
+# 지출 그래프
+교육정도_지출_graph = data_소비지출액_교육정도.plot.bar(ax=axes[4][1], fontsize=15,stacked=True,rot=0,color = ['lightpink','crimson','coral','lemonchiffon','chartreuse','deepskyblue','midnightblue','darkviolet'])
+교육정도_지출_graph.set_xticklabels(['초졸이하','중졸','고졸','대학이상'])
+교육정도_지출_graph.set_title('교육정도별 월평균 소비지출액',fontsize=20)
+교육정도_지출_graph.legend(loc='center left', bbox_to_anchor=(1,0.5))
+for p in 교육정도_지출_graph.patches:
+    x, y, width, height = p.get_bbox().bounds
+    if height == 0.0:
+        continue
+    교육정도_지출_graph.text(x+width, y+height/2, "%.1f %%"%(height), va='center',fontsize=12)
+    
+    
+
+# 소득 그래프
+직업_소득_graph = data_가구소득_직업.plot.bar(ax=axes[5][0], fontsize=15,stacked=True,rot=0,color = ['crimson','coral','lemonchiffon','chartreuse','deepskyblue','midnightblue','darkviolet','hotpink'])
+직업_소득_graph.set_xticklabels(['전문관리','사무','서비스판매','농어업','기능노무','군인/주부/학생/무직'], rotation=20)
+직업_소득_graph.set_title('직업_소득별 월평균 가구소득', fontsize=20)
+직업_소득_graph.legend(loc='center left', bbox_to_anchor=(1,0.5))
+for p in 직업_소득_graph.patches:
+    x, y, width, height = p.get_bbox().bounds
+    if height == 0.0:
+        continue
+    직업_소득_graph.text(x+width, y+height/2, "%.1f %%"%(height), va='center', fontsize=10)
+
+# 지출 그래프
+직업_지출_graph = data_소비지출액_직업.plot.bar(ax=axes[5][1], fontsize=15,stacked=True,rot=0,color = ['lightpink','crimson','coral','lemonchiffon','chartreuse','deepskyblue','midnightblue','darkviolet'])
+직업_지출_graph.set_xticklabels(['전문관리','사무','서비스판매','농어업','기능노무','군인/주부/학생/무직'], rotation=20)
+직업_지출_graph.set_title('직업_소득별 월평균 소비지출액', fontsize=20)
+직업_지출_graph.legend(loc='center left', bbox_to_anchor=(1,0.5))
+for p in 직업_지출_graph.patches:
+    x, y, width, height = p.get_bbox().bounds
+    if height == 0.0:
+        continue
+    직업_지출_graph.text(x+width, y+height/2, "%.1f %%"%(height), va='center', fontsize=10)
+    
+    
+    
+# 소득 그래프
+혼인상태_소득_graph = data_가구소득_혼인상태.plot.bar(ax=axes[6][0], fontsize=15,stacked=True,rot=0,color = ['crimson','coral','lemonchiffon','chartreuse','deepskyblue','midnightblue','darkviolet','hotpink'])
+혼인상태_소득_graph.set_xticklabels(['미혼','유배우','사별/이혼'])
+혼인상태_소득_graph.set_title('혼인상태별 월평균 가구소득', fontsize=20)
+혼인상태_소득_graph.legend(loc='center left', bbox_to_anchor=(1,0.5))
+for p in 혼인상태_소득_graph.patches:
+    x, y, width, height = p.get_bbox().bounds
+    if height == 0.0:
+        continue
+    혼인상태_소득_graph.text(x+width, y+height/2, "%.1f %%"%(height), va='center', fontsize=10)
+
+# 지출 그래프
+혼인상태_지출_graph = data_소비지출액_혼인상태.plot.bar(ax=axes[6][1], fontsize=15,stacked=True,rot=0,color = ['lightpink','crimson','coral','lemonchiffon','chartreuse','deepskyblue','midnightblue','darkviolet'])
+혼인상태_지출_graph.set_xticklabels(['미혼','유배우','사별/이혼'])
+혼인상태_지출_graph.set_title('혼인상태별 월평균 소비지출액', fontsize=20)
+혼인상태_지출_graph.legend(loc='center left', bbox_to_anchor=(1,0.5))
+for p in 혼인상태_지출_graph.patches:
+    x, y, width, height = p.get_bbox().bounds
+    if height == 0.0:
+        continue
+    혼인상태_지출_graph.text(x+width, y+height/2, "%.1f %%"%(height), va='center', fontsize=10)
+    
+    
+
+# 소득 그래프
+맞벌이여부_소득_graph = data_가구소득_맞벌이여부.plot.bar(ax=axes[7][0], fontsize=15,stacked=True,rot=0,color = ['crimson','coral','lemonchiffon','chartreuse','deepskyblue','midnightblue','darkviolet','hotpink'])
+맞벌이여부_소득_graph.set_xticklabels(['맞벌이', '맞벌이안함'])
+맞벌이여부_소득_graph.set_title('맞벌이여부별 월평균 가구소득', fontsize=20)
+맞벌이여부_소득_graph.legend(loc='center left', bbox_to_anchor=(1,0.5))
+for p in 맞벌이여부_소득_graph.patches:
+    x, y, width, height = p.get_bbox().bounds
+    if height == 0.0:
+        continue
+    맞벌이여부_소득_graph.text(x+width, y+height/2, "%.1f %%"%(height), va='center', fontsize=12)
+
+# 지출 그래프
+맞벌이여부_지출_graph = data_소비지출액_맞벌이여부.plot.bar(ax=axes[7][1], fontsize=15,stacked=True,rot=0,color = ['lightpink','crimson','coral','lemonchiffon','chartreuse','deepskyblue','midnightblue','darkviolet'])
+맞벌이여부_지출_graph.set_xticklabels(['맞벌이', '맞벌이안함'])
+맞벌이여부_지출_graph.set_title('맞벌이여부별 월평균 소비지출액', fontsize=20)
+맞벌이여부_지출_graph.legend(loc='center left', bbox_to_anchor=(1,0.5))
+for p in 맞벌이여부_지출_graph.patches:
+    x, y, width, height = p.get_bbox().bounds
+    if height == 0.0:
+        continue
+    맞벌이여부_지출_graph.text(x+width, y+height/2, "%.1f %%"%(height), va='center', fontsize=12)
+    
+    
+    
+# 소득 그래프
+주거점유형태_소득_graph = data_가구소득_주거점유형태.plot.bar(ax=axes[8][0], fontsize=15,stacked=True,rot=0,color = ['crimson','coral','lemonchiffon','chartreuse','deepskyblue','midnightblue','darkviolet','hotpink'])
+주거점유형태_소득_graph.set_xticklabels(['자가집','전세','월세/기타'])
+주거점유형태_소득_graph.set_title('주거점유형태별 월평균 가구소득', fontsize=20)
+주거점유형태_소득_graph.legend(loc='center left', bbox_to_anchor=(1,0.5))
+for p in 주거점유형태_소득_graph.patches:
+    x, y, width, height = p.get_bbox().bounds
+    if height == 0.0:
+        continue
+    주거점유형태_소득_graph.text(x+width, y+height/2, "%.1f %%"%(height), va='center', fontsize=12)
+
+# 지출 그래프
+주거점유형태_지출_graph = data_소비지출액_주거점유형태.plot.bar(ax=axes[8][1], fontsize=15,stacked=True,rot=0,color = ['lightpink','crimson','coral','lemonchiffon','chartreuse','deepskyblue','midnightblue','darkviolet'])
+주거점유형태_지출_graph.set_xticklabels(['자가집','전세','월세/기타'])
+주거점유형태_지출_graph.set_title('주거점유형태별 월평균 소비지출액', fontsize=20)
+주거점유형태_지출_graph.legend(loc='center left', bbox_to_anchor=(1,0.5))
+for p in 주거점유형태_지출_graph.patches:
+    x, y, width, height = p.get_bbox().bounds
+    if height == 0.0:
+        continue
+
+    주거점유형태_지출_graph.text(x+width, y+height/2, "%.1f %%"%(height), va='center', fontsize=12)
+
+
+# 지출 그래프
+가구소득_소득_graph = plt.rcParams["figure.figsize"] = (15, 10)
+fig.subplots_adjust(top = 1.3,wspace=0.3)
+가구소득_지출_graph = data_소비지출액_가구소득.plot.bar(stacked=True,rot=0,color = ['lightpink','crimson','coral','lemonchiffon','chartreuse','deepskyblue','midnightblue','darkviolet'])
+가구소득_지출_graph.set_xticklabels(['100만원 미만','100~200만원 미만','200~300만원 미만','300~400만원 미만','400~500만원 미만','500~600만원 미만','600~700만원 미만','700만원 이상'])
+가구소득_지출_graph.set_title('월평균 소비지출액')
+가구소득_지출_graph.legend(loc='center left', bbox_to_anchor=(1,0.5))
+for p in 가구소득_지출_graph.patches:
+    x, y, width, height = p.get_bbox().bounds
+    if height == 0.0:
+        continue
+    가구소득_지출_graph.text(x+width, y+height/2, "%.1f %%"%(height), va='center')
+
+
+
+
+
+## 거주의사와 거주기간 그래프
+
+# 자료 불러오기
+거주의사 = pd.read_csv(input_path.joinpath('29.세종시_거주의사(향후).csv'))
+거주의사
+
+# 자료 불러오기
+거주기간 = pd.read_csv(input_path.joinpath('26.세종시_거주기간.csv'))
+거주기간
+
+# 중분류, 소분류 제거
+data_거주의사_읍면동 = 거주의사.iloc[1:4,2:]
+data_거주의사_성별 = 거주의사.iloc[4:6,2:]
+data_거주의사_거주기간 = 거주의사.iloc[6:8,2:]
+data_거주의사_연령 = 거주의사.iloc[8:15,2:]
+data_거주의사_교육정도 = 거주의사.iloc[15:19,2:]
+data_거주의사_직업 = 거주의사.iloc[19:25,2:]
+data_거주의사_혼인상태 = 거주의사.iloc[25:28,2:]
+data_거주의사_가구소득 = 거주의사.iloc[28:36,2:]
+data_거주의사_맞벌이 = 거주의사.iloc[36:38,2:]
+data_거주의사_주거점유형태 = 거주의사.iloc[38:41,2:]
+
+data_거주기간_읍면동 = 거주기간.iloc[1:4,2:]
+data_거주기간_성별 = 거주기간.iloc[4:6,2:]
+data_거주기간_연령 = 거주기간.iloc[6:13,2:]
+data_거주기간_교육정도 = 거주기간.iloc[13:17,2:]
+data_거주기간_직업 = 거주기간.iloc[17:23,2:]
+data_거주기간_혼인상태 = 거주기간.iloc[23:26,2:]
+data_거주기간_가구소득 = 거주기간.iloc[26:34,2:]
+data_거주기간_맞벌이 = 거주기간.iloc[34:36,2:]
+data_거주기간_주거점유형태 = 거주기간.iloc[36:39,2:]
+
+
+# str->int type으로 바꾸기
+data_거주의사_읍면동 = data_거주의사_읍면동.astype(float)
+data_거주의사_성별 = data_거주의사_성별.astype(float)
+data_거주의사_거주기간 = data_거주의사_거주기간.astype(float)
+data_거주의사_연령 = data_거주의사_연령.astype(float)
+data_거주의사_교육정도 = data_거주의사_교육정도.astype(float)
+data_거주의사_직업 = data_거주의사_직업.astype(float)
+data_거주의사_혼인상태 = data_거주의사_혼인상태.astype(float)
+data_거주의사_가구소득 = data_거주의사_가구소득.astype(float)
+data_거주의사_맞벌이 = data_거주의사_맞벌이.astype(float)
+data_거주의사_주거점유형태 = data_거주의사_주거점유형태.astype(float)
+
+data_거주기간_읍면동 = data_거주기간_읍면동.astype(float)
+data_거주기간_성별 = data_거주기간_성별.astype(float)
+data_거주기간_연령 = data_거주기간_연령.astype(float)
+data_거주기간_교육정도 = data_거주기간_교육정도.astype(float)
+data_거주기간_직업 = data_거주기간_직업.astype(float)
+data_거주기간_혼인상태 = data_거주기간_혼인상태.astype(float)
+data_거주기간_가구소득 = data_거주기간_가구소득.astype(float)
+data_거주기간_맞벌이 = data_거주기간_맞벌이.astype(float)
+data_거주기간_주거점유형태 = data_거주기간_주거점유형태.astype(float)
+
+
+# 그래프
+
+fig, axes = plt.subplots(8, 2,constrained_layout=True, sharey=True)
+fig.subplots_adjust(top = 8,wspace=1)
+#fig.suptitle('성별 월평균 가구소득과 소비지출액', fontsize=16, fontweight='bold')
+
+# 거주의사 그래프
+읍면동_거주의사_graph = data_거주의사_읍면동.plot.bar(ax=axes[0][0],fontsize=15,stacked=True,rot=0,color = ['crimson','coral','lemonchiffon','chartreuse','deepskyblue','midnightblue','darkviolet','hotpink'])
+읍면동_거주의사_graph.set_xticklabels(['조치원읍','면지역','동지역'])
+읍면동_거주의사_graph.set_title('읍면동별 거주의사',fontsize=20)
+읍면동_거주의사_graph.legend(loc='center left', bbox_to_anchor=(1,0.5))
+for p in 읍면동_거주의사_graph.patches:
+    x, y, width, height = p.get_bbox().bounds
+    if height == 0.0:
+        continue
+    읍면동_거주의사_graph.text(x+width, y+height/2, "%.1f %%"%(height), va='center',fontsize=12)
+
+# 거주기간 그래프
+읍면동_거주기간_graph = data_거주기간_읍면동.plot.bar(ax=axes[0][1],fontsize=15,stacked=True,rot=0,color = ['lightpink','crimson','coral','lemonchiffon','chartreuse','deepskyblue','midnightblue','darkviolet'])
+읍면동_거주기간_graph.set_xticklabels(['조치원읍','면지역','동지역'])
+읍면동_거주기간_graph.set_title('읍면동별 거주기간',fontsize=20)
+읍면동_거주기간_graph.legend(loc='center left', bbox_to_anchor=(1,0.5))
+for p in 읍면동_거주기간_graph.patches:
+    x, y, width, height = p.get_bbox().bounds
+    if height == 0.0:
+        continue
+    읍면동_거주기간_graph.text(x+width, y+height/2, "%.1f %%"%(height), va='center',fontsize=10)
+
+    
+
+# 거주의사 그래프    
+성별_거주의사_graph = data_거주의사_성별.plot.bar(ax=axes[1][0],stacked=True,rot=0,fontsize=15, color = ['crimson','coral','lemonchiffon','chartreuse','deepskyblue','midnightblue','darkviolet','hotpink'])
+#성별_소득_graph = 성별_graph.add_subplot(2, 2, 1)
+성별_거주의사_graph.set_xticklabels(['남성', '여성'])
+성별_거주의사_graph.set_title('성별 거주의사', fontsize = 20)
+성별_거주의사_graph.legend(loc='center left', bbox_to_anchor=(1,0.5))
+for p in 성별_거주의사_graph.patches:
+    x, y, width, height = p.get_bbox().bounds
+    if height == 0.0:
+        continue
+    성별_거주의사_graph.text(x+width, y+height/2, "%.1f %%"%(height), va='center', ha='center', fontsize = 12)
+
+    
+# 거주기간 그래프
+성별_거주기간_graph = data_거주기간_성별.plot.bar(ax=axes[1][1],stacked=True,rot=0,fontsize=15,color = ['lightpink','crimson','coral','lemonchiffon','chartreuse','deepskyblue','midnightblue','darkviolet'])
+성별_거주기간_graph.set_xticklabels(['남성', '여성'])
+성별_거주기간_graph.set_title('성별 거주기간', fontsize = 20)
+성별_거주기간_graph.legend(loc='center left', bbox_to_anchor=(1,0.5))
+for p in 성별_거주기간_graph.patches:
+    x, y, width, height = p.get_bbox().bounds
+    if height == 0.0:
+        continue
+    성별_거주기간_graph.text(x+width, y+height/2, "%.1f %%"%(height), va='center', fontsize = 12)    
+    
+    
+    
+# 거주의사 그래프    
+연령_거주의사_graph = data_거주의사_연령.plot.bar(ax=axes[2][0], fontsize=15,stacked=True,rot=0,color = ['crimson','coral','lemonchiffon','chartreuse','deepskyblue','midnightblue','darkviolet','hotpink'])
+연령_거주의사_graph.set_xticklabels(['13-19세','20-29세','30-39세', '40-49세','50-59세','60세이상','65세이상'], rotation=45)
+연령_거주의사_graph.set_title('연령별 거주의사',fontsize = 20)
+연령_거주의사_graph.legend(loc='center left', bbox_to_anchor=(1,0.5))
+for p in 연령_거주의사_graph.patches:
+    x, y, width, height = p.get_bbox().bounds
+    if height == 0.0:
+        continue
+    연령_거주의사_graph.text(x+width, y+height/2, "%.1f %%"%(height), va='center',fontsize = 8)
+
+# 거주기간 그래프
+연령_거주기간_graph = data_거주기간_연령.plot.bar(ax=axes[2][1], fontsize=15,stacked=True,rot=0,color = ['lightpink','crimson','coral','lemonchiffon','chartreuse','deepskyblue','midnightblue','darkviolet'])
+연령_거주기간_graph.set_xticklabels(['13-19세','20-29세','30-39세', '40-49세','50-59세','60세이상','65세이상'], rotation=45)
+연령_거주기간_graph.set_title('연령별 거주기간',fontsize = 20)
+연령_거주기간_graph.legend(loc='center left', bbox_to_anchor=(1,0.5))
+for p in 연령_거주기간_graph.patches:
+    x, y, width, height = p.get_bbox().bounds
+    if height == 0.0:
+        continue
+    연령_거주기간_graph.text(x+width, y+height/2, "%.1f %%"%(height), va='center',fontsize = 8)
+    
+    
+    
+# 거주의사 그래프
+교육정도_거주의사_graph = data_거주의사_교육정도.plot.bar(ax=axes[3][0], fontsize=15,stacked=True,rot=0,color = ['crimson','coral','lemonchiffon','chartreuse','deepskyblue','midnightblue','darkviolet','hotpink'])
+교육정도_거주의사_graph.set_xticklabels(['초졸이하','중졸','고졸','대학이상'])
+교육정도_거주의사_graph.set_title('교육정도별 거주의사',fontsize=20)
+교육정도_거주의사_graph.legend(loc='center left', bbox_to_anchor=(1,0.5))
+for p in 교육정도_거주의사_graph.patches:
+    x, y, width, height = p.get_bbox().bounds
+    if height == 0.0:
+        continue
+    교육정도_거주의사_graph.text(x+width, y+height/2, "%.1f %%"%(height), va='center',fontsize=12)
+
+    
+# 거주기간 그래프
+교육정도_거주기간_graph = data_거주기간_교육정도.plot.bar(ax=axes[3][1], fontsize=15,stacked=True,rot=0,color = ['lightpink','crimson','coral','lemonchiffon','chartreuse','deepskyblue','midnightblue','darkviolet'])
+교육정도_거주기간_graph.set_xticklabels(['초졸이하','중졸','고졸','대학이상'])
+교육정도_거주기간_graph.set_title('교육정도별 거주기간',fontsize=20)
+교육정도_거주기간_graph.legend(loc='center left', bbox_to_anchor=(1,0.5))
+for p in 교육정도_거주기간_graph.patches:
+    x, y, width, height = p.get_bbox().bounds
+    if height == 0.0:
+        continue
+    교육정도_거주기간_graph.text(x+width, y+height/2, "%.1f %%"%(height), va='center',fontsize=12)
+    
+    
+
+# 거주의사 그래프
+직업_거주의사_graph = data_거주의사_직업.plot.bar(ax=axes[4][0], fontsize=15,stacked=True,rot=0,color = ['crimson','coral','lemonchiffon','chartreuse','deepskyblue','midnightblue','darkviolet','hotpink'])
+직업_거주의사_graph.set_xticklabels(['전문관리','사무','서비스판매','농어업','기능노무','군인/주부/학생/무직'], rotation=20)
+직업_거주의사_graph.set_title('직업별 거주의사', fontsize=20)
+직업_거주의사_graph.legend(loc='center left', bbox_to_anchor=(1,0.5))
+for p in 직업_소득_graph.patches:
+    x, y, width, height = p.get_bbox().bounds
+    if height == 0.0:
+        continue
+    직업_거주의사_graph.text(x+width, y+height/2, "%.1f %%"%(height), va='center', fontsize=10)
+
+# 거주기간 그래프
+직업_거주기간_graph = data_거주기간_직업.plot.bar(ax=axes[4][1], fontsize=15,stacked=True,rot=0,color = ['lightpink','crimson','coral','lemonchiffon','chartreuse','deepskyblue','midnightblue','darkviolet'])
+직업_거주기간_graph.set_xticklabels(['전문관리','사무','서비스판매','농어업','기능노무','군인/주부/학생/무직'], rotation=20)
+직업_거주기간_graph.set_title('직업별 거주기간', fontsize=20)
+직업_거주기간_graph.legend(loc='center left', bbox_to_anchor=(1,0.5))
+for p in 직업_거주기간_graph.patches:
+    x, y, width, height = p.get_bbox().bounds
+    if height == 0.0:
+        continue
+    직업_거주기간_graph.text(x+width, y+height/2, "%.1f %%"%(height), va='center', fontsize=10)
+    
+    
+    
+# 거주의사 그래프
+혼인상태_거주의사_graph = data_거주의사_혼인상태.plot.bar(ax=axes[5][0], fontsize=15,stacked=True,rot=0,color = ['crimson','coral','lemonchiffon','chartreuse','deepskyblue','midnightblue','darkviolet','hotpink'])
+혼인상태_거주의사_graph.set_xticklabels(['미혼','유배우','사별/이혼'])
+혼인상태_거주의사_graph.set_title('혼인상태별 거주의사', fontsize=20)
+혼인상태_거주의사_graph.legend(loc='center left', bbox_to_anchor=(1,0.5))
+for p in 혼인상태_거주의사_graph.patches:
+    x, y, width, height = p.get_bbox().bounds
+    if height == 0.0:
+        continue
+    혼인상태_거주의사_graph.text(x+width, y+height/2, "%.1f %%"%(height), va='center', fontsize=10)
+
+# 거주기간 그래프
+혼인상태_거주기간_graph = data_거주기간_혼인상태.plot.bar(ax=axes[5][1], fontsize=15,stacked=True,rot=0,color = ['lightpink','crimson','coral','lemonchiffon','chartreuse','deepskyblue','midnightblue','darkviolet'])
+혼인상태_거주기간_graph.set_xticklabels(['미혼','유배우','사별/이혼'])
+혼인상태_거주기간_graph.set_title('혼인상태별 거주기간', fontsize=20)
+혼인상태_거주기간_graph.legend(loc='center left', bbox_to_anchor=(1,0.5))
+for p in 혼인상태_거주기간_graph.patches:
+    x, y, width, height = p.get_bbox().bounds
+    if height == 0.0:
+        continue
+    혼인상태_거주기간_graph.text(x+width, y+height/2, "%.1f %%"%(height), va='center', fontsize=10)
+    
+    
+
+# 거주의사 그래프
+맞벌이여부_거주의사_graph = data_거주의사_맞벌이.plot.bar(ax=axes[6][0], fontsize=15,stacked=True,rot=0,color = ['crimson','coral','lemonchiffon','chartreuse','deepskyblue','midnightblue','darkviolet','hotpink'])
+맞벌이여부_거주의사_graph.set_xticklabels(['맞벌이', '맞벌이안함'])
+맞벌이여부_거주의사_graph.set_title('맞벌이여부별 거주의사', fontsize=20)
+맞벌이여부_거주의사_graph.legend(loc='center left', bbox_to_anchor=(1,0.5))
+for p in 맞벌이여부_거주의사_graph.patches:
+    x, y, width, height = p.get_bbox().bounds
+    if height == 0.0:
+        continue
+    맞벌이여부_거주의사_graph.text(x+width, y+height/2, "%.1f %%"%(height), va='center', fontsize=12)
+
+    
+# 거주기간 그래프
+맞벌이여부_거주기간_graph = data_거주기간_맞벌이.plot.bar(ax=axes[6][1], fontsize=15,stacked=True,rot=0,color = ['lightpink','crimson','coral','lemonchiffon','chartreuse','deepskyblue','midnightblue','darkviolet'])
+맞벌이여부_거주기간_graph.set_xticklabels(['맞벌이', '맞벌이안함'])
+맞벌이여부_거주기간_graph.set_title('맞벌이여부별 거주기간', fontsize=20)
+맞벌이여부_거주기간_graph.legend(loc='center left', bbox_to_anchor=(1,0.5))
+for p in 맞벌이여부_거주기간_graph.patches:
+    x, y, width, height = p.get_bbox().bounds
+    if height == 0.0:
+        continue
+    맞벌이여부_거주기간_graph.text(x+width, y+height/2, "%.1f %%"%(height), va='center', fontsize=12)
+    
+    
+    
+# 거주의사 그래프
+주거점유형태_거주의사_graph = data_거주의사_주거점유형태.plot.bar(ax=axes[7][0], fontsize=15,stacked=True,rot=0,color = ['crimson','coral','lemonchiffon','chartreuse','deepskyblue','midnightblue','darkviolet','hotpink'])
+주거점유형태_거주의사_graph.set_xticklabels(['자가집','전세','월세/기타'])
+주거점유형태_거주의사_graph.set_title('주거점유형태별 거주의사', fontsize=20)
+주거점유형태_거주의사_graph.legend(loc='center left', bbox_to_anchor=(1,0.5))
+for p in 주거점유형태_거주의사_graph.patches:
+    x, y, width, height = p.get_bbox().bounds
+    if height == 0.0:
+        continue
+    주거점유형태_거주의사_graph.text(x+width, y+height/2, "%.1f %%"%(height), va='center', fontsize=12)
+
+# 거주기간 그래프
+주거점유형태_거주기간_graph = data_거주기간_주거점유형태.plot.bar(ax=axes[7][1], fontsize=15,stacked=True,rot=0,color = ['lightpink','crimson','coral','lemonchiffon','chartreuse','deepskyblue','midnightblue','darkviolet'])
+주거점유형태_거주기간_graph.set_xticklabels(['자가집','전세','월세/기타'])
+주거점유형태_거주기간_graph.set_title('주거점유형태별 거주기간', fontsize=20)
+주거점유형태_거주기간_graph.legend(loc='center left', bbox_to_anchor=(1,0.5))
+for p in 주거점유형태_거주기간_graph.patches:
+    x, y, width, height = p.get_bbox().bounds
+    if height == 0.0:
+        continue
+
+    주거점유형태_거주기간_graph.text(x+width, y+height/2, "%.1f %%"%(height), va='center', fontsize=12)
+
+
+# 거주기간별 거주의사 그래프
+거주의사_거주기간_graph = plt.rcParams["figure.figsize"] = (15, 10)
+fig.subplots_adjust(top = 1.3,wspace=0.3)
+거주의사_거주기간_graph = data_거주의사_거주기간.plot.bar(stacked=True,rot=0,color = ['lightpink','crimson','coral','lemonchiffon','chartreuse','deepskyblue','midnightblue','darkviolet'])
+거주의사_거주기간_graph.set_xticklabels(['출범이전', '출범이후'])
+거주의사_거주기간_graph.set_title('거주기간별 거주의사')
+거주의사_거주기간_graph.legend(loc='center left', bbox_to_anchor=(1,0.5))
+for p in 거주의사_거주기간_graph.patches:
+    x, y, width, height = p.get_bbox().bounds
+    if height == 0.0:
+        continue
+    거주의사_거주기간_graph.text(x+width, y+height/2, "%.1f %%"%(height), va='center')
+
+
+
+
 
 
 
