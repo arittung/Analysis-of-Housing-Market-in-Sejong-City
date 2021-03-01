@@ -1360,7 +1360,7 @@ style.use('seaborn-talk')
 fig = plt.figure(figsize = (70,23))
 ax = fig.add_subplot(111, projection ='3d')
 
-# x : 지역 / y : 나이 / z : 인구 수
+# x : 나이 / y : 지역 / z : 인구 수
 j = 0
 colors = ['lightcoral','tomato','sandybrown','moccasin', 'burlywood','khaki','yellowgreen','lightgreen','paleturquoise','skyblue','royalblue', 'slateblue', 'mediumpurple', 'plum', 'pink', 'violet', 'blueviolet', 'slategrey', 'darkslategray', 'navy']
 address = ['조치원읍', '연기면','연동면', '부강면','금남면','장군면','연서면','전의면','전동면', '소정면', '한솔동','새롬동', '도담동','아름동','종촌동','고운동','소담동','보람동','대평동','다정동']
@@ -1387,7 +1387,7 @@ ax.set_xticks(np.arange(0,110,10))
 ax.set_xticklabels(ages,rotation = 45, fontsize = 23)
 ax.set_ylabel('지역')
 ax.set_xlabel('나이')
-ax.set_zlabel('인구수')   
+ax.set_zlabel('인구수')  
 
 
 
@@ -1396,7 +1396,7 @@ style.use('seaborn-talk')
 fig = plt.figure(figsize = (70,23))
 ax = fig.add_subplot(111, projection ='3d')
 
-# x : 지역 / y : 나이 / z : 인구 수
+# x : 나이 / y : 지역 / z : 인구 수
 j = 0
 colors = ['lightcoral','tomato','sandybrown','moccasin', 'burlywood','khaki','yellowgreen','lightgreen','paleturquoise','skyblue','royalblue', 'slateblue', 'mediumpurple', 'plum', 'pink', 'violet', 'blueviolet', 'slategrey', 'darkslategray', 'navy']
 address = ['조치원읍', '연기면','연동면', '부강면','금남면','장군면','연서면','전의면','전동면', '소정면', '한솔동','새롬동', '도담동','아름동','종촌동','고운동','소담동','보람동','대평동','다정동']
@@ -1421,7 +1421,7 @@ ax.set_xticks(np.arange(0,110,10))
 ax.set_xticklabels(ages,rotation = 45, fontsize = 23)
 ax.set_ylabel('지역')
 ax.set_xlabel('나이')
-ax.set_zlabel('인구수')    
+ax.set_zlabel('인구수')        
 
 
 
