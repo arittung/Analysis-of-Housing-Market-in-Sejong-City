@@ -1362,7 +1362,7 @@ ax = fig.add_subplot(111, projection ='3d')
 
 # x : 지역 / y : 나이 / z : 인구 수
 j = 0
-colors = ['lightcoral','tomato','sandybrown','moccasin', 'burlywood','khaki','yellowgreen','lightgreen','paleturquoise','skyblue','royalblue', 'lavender', 'mediumpurple', 'plum', 'pink', 'violet', 'lightsteelblue', 'slategrey', 'darkslategray', 'navy']
+colors = ['lightcoral','tomato','sandybrown','moccasin', 'burlywood','khaki','yellowgreen','lightgreen','paleturquoise','skyblue','royalblue', 'slateblue', 'mediumpurple', 'plum', 'pink', 'violet', 'blueviolet', 'slategrey', 'darkslategray', 'navy']
 address = ['조치원읍', '연기면','연동면', '부강면','금남면','장군면','연서면','전의면','전동면', '소정면', '한솔동','새롬동', '도담동','아름동','종촌동','고운동','소담동','보람동','대평동','다정동']
 ages = ['10살_미만','10대','20대','30대','40대','50대','60대','70대','80대','90대','100세_이상']   
 age=[1,10,20,30,40,50,60,70,80,90,100]
@@ -1398,7 +1398,7 @@ ax = fig.add_subplot(111, projection ='3d')
 
 # x : 지역 / y : 나이 / z : 인구 수
 j = 0
-colors = ['indianred','red','chocolate','darkorange', 'gold', 'darkgoldenrod', 'darkkhaki','olivedrab','chartreuse','darkseagreen','aquamarine','mediumturquoise', 'aqua', 'deepskyblue', 'dodgerblue', 'mediumslateblue', 'darkviolet', 'fuchsia', 'deeppink', 'crimson', 'gray']
+colors = ['lightcoral','tomato','sandybrown','moccasin', 'burlywood','khaki','yellowgreen','lightgreen','paleturquoise','skyblue','royalblue', 'slateblue', 'mediumpurple', 'plum', 'pink', 'violet', 'blueviolet', 'slategrey', 'darkslategray', 'navy']
 address = ['조치원읍', '연기면','연동면', '부강면','금남면','장군면','연서면','전의면','전동면', '소정면', '한솔동','새롬동', '도담동','아름동','종촌동','고운동','소담동','보람동','대평동','다정동']
 ages = ['10살_미만','10대','20대','30대','40대','50대','60대','70대','80대','90대','100세_이상']   
 age=[1,10,20,30,40,50,60,70,80,90,100]
