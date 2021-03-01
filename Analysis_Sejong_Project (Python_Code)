@@ -1362,11 +1362,9 @@ ax = fig.add_subplot(111, projection ='3d')
 
 # x : 지역 / y : 나이 / z : 인구 수
 j = 0
-#colors = ['red','red','red','red','red','red','red','red','red','red']
 colors = ['lightcoral','tomato','sandybrown','moccasin', 'burlywood','khaki','yellowgreen','lightgreen','paleturquoise','skyblue','royalblue', 'lavender', 'mediumpurple', 'plum', 'pink', 'violet', 'lightsteelblue', 'slategrey', 'darkslategray', 'navy']
-#colors = ['blue','blue','blue','blue','blue','blue','blue','blue','blue','blue']
 address = ['조치원읍', '연기면','연동면', '부강면','금남면','장군면','연서면','전의면','전동면', '소정면', '한솔동','새롬동', '도담동','아름동','종촌동','고운동','소담동','보람동','대평동','다정동']
-#age = ['10살_미만','10대','20대','30대','40대','50대','60대','70대','80대','90대','100세_이상']   
+ages = ['10살_미만','10대','20대','30대','40대','50대','60대','70대','80대','90대','100세_이상']   
 age=[1,10,20,30,40,50,60,70,80,90,100]
 
 for c, r in zip(colors, [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19]):
@@ -1380,14 +1378,17 @@ for c, r in zip(colors, [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19]):
     #print( r, indexs, heights, c)
     ax.plot(indexs, heights, zs = r, zdir = 'y', color = c, alpha = 0.7, marker='o')
     j = j+1
+    
 
 ax.set_yticklabels(address, fontsize = 17, rotation = -20)
 #ax.set_yticklabels(['조치원읍', '연기면', '연동면', '부강면', '금남면', '장군면', '연서면','전의면', '전동면', '소정면', '한솔동', '새롬동', '도담동', '아름동', '종촌동', '고운동', '소담동','보람동', '대평동', '다정동'])    
 ax.set_yticks(np.arange(0,20,1))
-ax.set_xticklabels(age,rotation = 45, fontsize = 23)
+ax.set_xticks(np.arange(0,110,10))
+ax.set_xticklabels(ages,rotation = 45, fontsize = 23)
 ax.set_ylabel('지역')
 ax.set_xlabel('나이')
-ax.set_zlabel('인구수')    
+ax.set_zlabel('인구수')   
+
 
 
 # (여)나이-지역 그래프
@@ -1397,11 +1398,9 @@ ax = fig.add_subplot(111, projection ='3d')
 
 # x : 지역 / y : 나이 / z : 인구 수
 j = 0
-#colors = ['red','red','red','red','red','red','red','red','red','red']
 colors = ['indianred','red','chocolate','darkorange', 'gold', 'darkgoldenrod', 'darkkhaki','olivedrab','chartreuse','darkseagreen','aquamarine','mediumturquoise', 'aqua', 'deepskyblue', 'dodgerblue', 'mediumslateblue', 'darkviolet', 'fuchsia', 'deeppink', 'crimson', 'gray']
-#colors = ['blue','blue','blue','blue','blue','blue','blue','blue','blue','blue']
 address = ['조치원읍', '연기면','연동면', '부강면','금남면','장군면','연서면','전의면','전동면', '소정면', '한솔동','새롬동', '도담동','아름동','종촌동','고운동','소담동','보람동','대평동','다정동']
-#age = ['10살_미만','10대','20대','30대','40대','50대','60대','70대','80대','90대','100세_이상']   
+ages = ['10살_미만','10대','20대','30대','40대','50대','60대','70대','80대','90대','100세_이상']   
 age=[1,10,20,30,40,50,60,70,80,90,100]
 
 for c, r in zip(colors, [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19]):
@@ -1413,13 +1412,13 @@ for c, r in zip(colors, [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19]):
     #tmp
     heights = tmp
     #print( r, indexs, heights, c)
-    ax.plot(indexs, heights, zs = r, zdir = 'y', color = c, alpha = 0.7, marker='o')
+    ax.plot(indexs, heights, zs = r, zdir = 'y', color = c, alpha = 0.7, marker ='o')
     j = j+1
 
 ax.set_yticklabels(address, fontsize = 17, rotation = -20)
-#ax.set_yticklabels(['조치원읍', '연기면', '연동면', '부강면', '금남면', '장군면', '연서면','전의면', '전동면', '소정면', '한솔동', '새롬동', '도담동', '아름동', '종촌동', '고운동', '소담동','보람동', '대평동', '다정동'])    
 ax.set_yticks(np.arange(0,20,1))
-ax.set_xticklabels(age,rotation = 45, fontsize = 23)
+ax.set_xticks(np.arange(0,110,10))
+ax.set_xticklabels(ages,rotation = 45, fontsize = 23)
 ax.set_ylabel('지역')
 ax.set_xlabel('나이')
 ax.set_zlabel('인구수')    
