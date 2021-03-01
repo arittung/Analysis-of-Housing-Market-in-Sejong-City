@@ -1280,41 +1280,37 @@ data_연령별_인구 = data_연령별_인구.rename(columns = {'나이_성별' 
 data_연령별_인구
 
 
-data_연령별_인구['나이'] = 0
+data_연령별_인구['나이대'] = 0
 for i in range(len(data_연령별_인구['성별'])):
     print(data_연령별_인구['나이분류'][i])
     if(data_연령별_인구['나이분류'][i] == '0~9세'):
-        data_연령별_인구['나이'][i] = 1
+        data_연령별_인구['나이대'][i] = 1
     elif(data_연령별_인구['나이분류'][i] == '10~19세'):
-        data_연령별_인구['나이'][i] = 10
+        data_연령별_인구['나이대'][i] = 10
     elif(data_연령별_인구['나이분류'][i] == '20~29세'):
-        data_연령별_인구['나이'][i] = 20
+        data_연령별_인구['나이대'][i] = 20
     elif(data_연령별_인구['나이분류'][i] == '30~39세'):
-        data_연령별_인구['나이'][i] = 30
+        data_연령별_인구['나이대'][i] = 30
     elif(data_연령별_인구['나이분류'][i] == '40~49세'):
-        data_연령별_인구['나이'][i] = 40
+        data_연령별_인구['나이대'][i] = 40
     elif(data_연령별_인구['나이분류'][i] == '50~59세'):
-        data_연령별_인구['나이'][i] = 50
+        data_연령별_인구['나이대'][i] = 50
     elif(data_연령별_인구['나이분류'][i] == '60~69세'):
-        data_연령별_인구['나이'][i] = 60
+        data_연령별_인구['나이대'][i] = 60
     elif(data_연령별_인구['나이분류'][i] == '70~79세'):
-        data_연령별_인구['나이'][i] = 70
+        data_연령별_인구['나이대'][i] = 70
     elif(data_연령별_인구['나이분류'][i] == '80~89세'):
-        data_연령별_인구['나이'][i] = 80
+        data_연령별_인구['나이대'][i] = 80
     elif(data_연령별_인구['나이분류'][i] == '90~99세'):
-        data_연령별_인구['나이'][i] = 90
+        data_연령별_인구['나이대'][i] = 90
     elif(data_연령별_인구['나이분류'][i] == '100세_이상'):
-        data_연령별_인구['나이'][i] = 100
+        data_연령별_인구['나이대'][i] = 100
 data_연령별_인구
 
 # 열 순서 바꾸기
-data_연령별_인구 = data_연령별_인구[['성별', '나이분류','나이','세종특별자치시', '조치원읍', '연기면', '연동면', '부강면', '금남면', '장군면', '연서면',
+data_연령별_인구 = data_연령별_인구[['성별', '나이분류','나이대','세종특별자치시', '조치원읍', '연기면', '연동면', '부강면', '금남면', '장군면', '연서면',
        '전의면', '전동면', '소정면', '한솔동', '새롬동', '도담동', '아름동', '종촌동', '고운동', '소담동',
        '보람동', '대평동', '다정동']]
-data_연령별_인구
-
-# 나이가 아닌 행 삭제
-data_연령별_인구 = data_연령별_인구.drop(index=[11, 12, 24, 25], axis = 0)
 data_연령별_인구
 
 
@@ -1324,52 +1320,109 @@ data_연령별_인구
 
 ## 인구현황 그래프
 
+# 연령구간인구수와 총_거주자_수 삭제
+data_연령별_인구 = data_연령별_인구.drop(index=[11, 12, 24, 25], axis = 0)
+data_연령별_인구
+
+
 # 인덱스 재설정
 data_연령별_인구 = data_연령별_인구.reset_index()
-
-# 시군구 표 생성
-data_지역별_인구 = data_연령별_인구[['조치원읍', '연기면','연동면', '부강면','금남면','장군면','연서면','전의면','전동면', '소정면', '한솔동','새롬동', '도담동','아름동','종촌동','고운동','소담동','보람동','대평동','다정동']]
-data_지역별_인구
+data_연령별_인구
 
 
-# 그래프 한글깨짐 방지
-import matplotlib 
-matplotlib.font_manager._rebuild()
-plt.rc("font", family="Malgun Gothic")
+#나이대와 지역만 남기기
+data_연령별_인구 = data_연령별_인구[['나이대', '조치원읍', '연기면','연동면', '부강면','금남면','장군면','연서면','전의면','전동면', '소정면', '한솔동','새롬동', '도담동','아름동','종촌동','고운동','소담동','보람동','대평동','다정동']]
+data_연령별_인구
 
+
+# 남자 나이대-동네별 인구
+data_지역별_인구_남자 = data_연령별_인구[:11]
+data_지역별_인구_남자 = data_지역별_인구_남자.transpose()
+data_지역별_인구_남자 = data_지역별_인구_남자[1:].reset_index()
+
+data_지역별_인구_남자 = data_지역별_인구_남자.rename(columns = {'index':'지역',0:1,1:100,2:10,3:20,4:30,5:40,6:50,7:60,8:70,9:80,10:90})
+data_지역별_인구_남자 = data_지역별_인구_남자[[1,10,20,30,40,50,60,70,80,90,100]]
+data_지역별_인구_남자
+
+
+# 여자 나이대-동네별 인구
+data_지역별_인구_여자 = data_연령별_인구[11:]
+data_지역별_인구_여자 = data_지역별_인구_여자.transpose()
+data_지역별_인구_여자 = data_지역별_인구_여자[1:].reset_index()
+
+data_지역별_인구_여자 = data_지역별_인구_여자.rename(columns = {'index':'지역',11:1,12:100,13:10,14:20,15:30,16:40,17:50,18:60,19:70,20:80,21:90})
+data_지역별_인구_여자 = data_지역별_인구_여자[[1,10,20,30,40,50,60,70,80,90,100]]
+data_지역별_인구_여자
+
+
+# (남)나이-지역 그래프
 style.use('seaborn-talk')
-fig = plt.figure(figsize = (70,13))
+fig = plt.figure(figsize = (70,23))
 ax = fig.add_subplot(111, projection ='3d')
 
 # x : 지역 / y : 나이 / z : 인구 수
 j = 0
 #colors = ['red','red','red','red','red','red','red','red','red','red']
-colors = ['red','saddlebrown','darkorange','sienna','gold','darkgreen','lime','dodgerblue','navy','purple','palevioletred']
+colors = ['lightcoral','tomato','sandybrown','moccasin', 'burlywood','khaki','yellowgreen','lightgreen','paleturquoise','skyblue','royalblue', 'lavender', 'mediumpurple', 'plum', 'pink', 'violet', 'lightsteelblue', 'slategrey', 'darkslategray', 'navy']
 #colors = ['blue','blue','blue','blue','blue','blue','blue','blue','blue','blue']
 address = ['조치원읍', '연기면','연동면', '부강면','금남면','장군면','연서면','전의면','전동면', '소정면', '한솔동','새롬동', '도담동','아름동','종촌동','고운동','소담동','보람동','대평동','다정동']
-    
-for c, r in zip(colors, [10,9,8,7,6,5,4,3,2, 1, 0]):
-    indexs = address
-    tmp = data_지역별_인구.iloc[j]
+#age = ['10살_미만','10대','20대','30대','40대','50대','60대','70대','80대','90대','100세_이상']   
+age=[1,10,20,30,40,50,60,70,80,90,100]
+
+for c, r in zip(colors, [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19]):
+    indexs = age
+    tmp = data_지역별_인구_남자.iloc[j]
     tmp = tmp.reset_index()
     #print(tmp)
     tmp = np.array(tmp[j].tolist())
     #tmp
     heights = tmp
     #print( r, indexs, heights, c)
-    ax.bar(indexs, heights, zs = r, zdir = 'y', color = c, alpha = 0.8)
+    ax.plot(indexs, heights, zs = r, zdir = 'y', color = c, alpha = 0.7)
     j = j+1
 
-ax.set_yticklabels(['10살 미만','10대','20대','30대','40대','50대','60대','70대','80대','90대','100살이상'], rotation =-20)    
-ax.set_yticks(np.arange(0,11,1))
-ax.set_xticklabels(address,rotation = 45)
-ax.set_xlabel('지역')
-ax.set_ylabel('나이')
+ax.set_yticklabels(address, fontsize = 17, rotation = -20)
+#ax.set_yticklabels(['조치원읍', '연기면', '연동면', '부강면', '금남면', '장군면', '연서면','전의면', '전동면', '소정면', '한솔동', '새롬동', '도담동', '아름동', '종촌동', '고운동', '소담동','보람동', '대평동', '다정동'])    
+ax.set_yticks(np.arange(0,20,1))
+ax.set_xticklabels(age,rotation = 45, fontsize = 23)
+ax.set_ylabel('지역')
+ax.set_xlabel('나이')
 ax.set_zlabel('인구수')    
-    
-    
 
 
+# (여)나이-지역 그래프
+style.use('seaborn-talk')
+fig = plt.figure(figsize = (70,23))
+ax = fig.add_subplot(111, projection ='3d')
+
+# x : 지역 / y : 나이 / z : 인구 수
+j = 0
+#colors = ['red','red','red','red','red','red','red','red','red','red']
+colors = ['indianred','red','chocolate','darkorange', 'gold', 'darkgoldenrod', 'darkkhaki','olivedrab','chartreuse','darkseagreen','aquamarine','mediumturquoise', 'aqua', 'deepskyblue', 'dodgerblue', 'mediumslateblue', 'darkviolet', 'fuchsia', 'deeppink', 'crimson', 'gray']
+#colors = ['blue','blue','blue','blue','blue','blue','blue','blue','blue','blue']
+address = ['조치원읍', '연기면','연동면', '부강면','금남면','장군면','연서면','전의면','전동면', '소정면', '한솔동','새롬동', '도담동','아름동','종촌동','고운동','소담동','보람동','대평동','다정동']
+#age = ['10살_미만','10대','20대','30대','40대','50대','60대','70대','80대','90대','100세_이상']   
+age=[1,10,20,30,40,50,60,70,80,90,100]
+
+for c, r in zip(colors, [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19]):
+    indexs = age
+    tmp = data_지역별_인구_여자.iloc[j]
+    tmp = tmp.reset_index()
+    #print(tmp)
+    tmp = np.array(tmp[j].tolist())
+    #tmp
+    heights = tmp
+    #print( r, indexs, heights, c)
+    ax.plot(indexs, heights, zs = r, zdir = 'y', color = c, alpha = 0.7)
+    j = j+1
+
+ax.set_yticklabels(address, fontsize = 17, rotation = -20)
+#ax.set_yticklabels(['조치원읍', '연기면', '연동면', '부강면', '금남면', '장군면', '연서면','전의면', '전동면', '소정면', '한솔동', '새롬동', '도담동', '아름동', '종촌동', '고운동', '소담동','보람동', '대평동', '다정동'])    
+ax.set_yticks(np.arange(0,20,1))
+ax.set_xticklabels(age,rotation = 45, fontsize = 23)
+ax.set_ylabel('지역')
+ax.set_xlabel('나이')
+ax.set_zlabel('인구수')    
 
 
 
